@@ -1,0 +1,277 @@
+################################################################################
+# THIS IS A SET DEFINITION FILE TO PRE-PROCESS LOGFILES FROM SALIENCY PROTOCOL
+# Kristiina Juurmaa 2.7.2012
+# Computer Enabled Neuroplasticity Treatment
+################################################################################
+
+pulses:       event_type == "Pulse"
+port_input:   event_type == "Port Input"
+text_input:   event_type == "Text Input"
+save_logfile: event_type == "Save Logfile"
+control:      event_type == "Pause" or event_type == "Resume" or event_type == "Quit"
+
+#make sure none of the events
+#had uncertainties that are unacceptable.
+unc_over_1 : time_uncertainty > 1
+over1_count = count( unc_over_1 ) 
+unc_over_5 : time_uncertainty > 5
+over5_count = count( unc_over_5 )
+
+
+###############################################################################
+# DEFINE THE SETS OF STIMULI AND RESPONSES THAT WILL BE MATCHED TOGETHER
+###############################################################################
+
+# set of all stimuli (targets)
+stimulus: event_type == "Picture" and code contains "target"  #or code contains "primer")
+# set of all responses to stimuli (other responses excluded)
+response: event_type == "Response" and  rel_index_range( -1, -1 ) is stimulus  #trial > 5
+
+# left hand responses
+#response_nonshape( response ) : code == "1"
+# right hand responses
+#response_shape( response ) : code == "2"
+
+# count number of stimuli and responses
+stimulus_count = count( stimulus )
+response_count = count( response )
+
+# match events from the event set "stimulus" with events from
+# the event set "response" with a window of 100 to 2000 milliseconds
+# after the first event. This will create a set of event pairs.
+pair:: simple_match_all( 100, 2000, stimulus, response )
+#{stimulus, response}
+
+
+###############################################################################
+# CLASSIFY ABOVE DEFINED 'PAIR' INTO SUBSETS
+###############################################################################
+
+#( pair )
+
+# HITS FOR CONGRUENT TRIALS
+congruent( rm_hit ):: code1 contains "Congruent;" 
+congruent_count = count( congruent )
+
+	# hits for congruent shapes
+		hit_con_shape( rm_hit ):: code1 contains "Congruent; shape;"
+		hit_con_shape_count = count( hit_con_shape )
+		#reaction times
+		#hit_con_shape_RT = duration1
+		
+	
+	# hits for congruent nonshapes
+		hit_con_nonshape( rm_hit ):: code1 contains "Congruent; nonShape;" 
+		hit_con_nonshape_count = count( hit_con_nonshape )
+
+# HITS FOR INCONGRUENT TRIALS
+incon( rm_hit ):: code1 contains "InCon;" 
+incon_count = count( incon )
+
+	# hits for incongruent shapes
+		hit_incon_shape( rm_hit ):: code1 contains "InCon; shape;" 
+		hit_incon_shape_count = count( hit_incon_shape )
+
+	# hits for incongruent nonshapes
+		hit_incon_nonshape( rm_hit ):: code1 contains "InCon; nonShape;" 
+		hit_incon_nonshape_count = count( hit_incon_nonshape )
+
+
+
+
+
+
+# INCORRECT RESPONSES FOR CONGRUENT TRIALS
+congruent_miss( rm_miss ):: code1 contains "Congruent;" 
+congruent_miss_count = count( congruent_miss )
+
+	# incorrect responses for congruent shapes
+		miss_con_shape( rm_miss ):: code1 contains "Congruent; shape;" 
+		miss_con_shape_count = count( miss_con_shape )
+		#reaction times
+		#hit_con_shape_RT = duration1
+	
+	# incorrect responses for congruent nonshapes
+		miss_con_nonshape( rm_miss ):: code1 contains "Congruent; nonShape;" 
+		miss_con_nonshape_count = count( miss_con_nonshape )
+
+# INCORRECT RESPONSES FOR INCONGRUENT TRIALS
+incon_miss( rm_miss ):: code1 contains "InCon;" 
+incon_miss_count = count( incon_miss )
+
+	# incorrect responses for incongruent shapes
+		miss_incon_shape( rm_miss ):: code1 contains "InCon; shape;" 
+		miss_incon_shape_count = count( miss_incon_shape )
+
+	# incorrect responses for incongruent nonshapes
+		miss_incon_nonshape( rm_miss ):: code1 contains "InCon; nonShape;" 
+		miss_incon_nonshape_count = count( miss_incon_nonshape )
+
+
+# hits in different conditions (types of hits)
+event_pair_property hit_type(hit_con_shape, hit_con_nonshape, hit_incon_shape, hit_incon_nonshape)
+#event_pair_property duration_hit(duration1:: )
+#rm_hit how to pick duration from rm_hit???
+
+
+#misses in different conditions
+event_pair_property miss_type(miss_con_shape, miss_con_nonshape, miss_incon_shape, miss_incon_nonshape)
+
+
+#list the type of hit  and corresponding RT's.
+#(here we choose duration1 (duration of the target stimulus) as RT since counting starts from target onset and ends when event 'response' takes place.
+event_pair_table custom(hit_type, duration1)
+print "TRIAL TYPES AND RT'S FOR HITS (in chronological order) "
+print custom( pair, "\t", "\n" )
+
+
+#list the type of miss and corresponding RT's.
+#(here we choose duration1 (duration of the target stimulus) as RT since counting starts from target onset and ends when event 'response' takes place.
+event_pair_table custom2(miss_type, duration1)
+print "TRIAL TYPES AND RT'S FOR MISSES (in chronological order) "
+print custom2( pair, "\t", "\n" )
+
+
+
+
+#average RT's for hits in different trials
+rt_avg_con = avg(congruent, duration1)
+rt_avg_incon = avg(incon, duration1)
+
+#average RT's for hits in first block (consists __ trials)
+#block1 = 
+
+#(trial 1 ==  8-484)
+#rel_index_range(int,int,set_name)
+#-----elements with indices in the given range where the indices denote the order
+#within the set "set_name". If the current element is also in "set_name" it
+#has index zero and can be in the returned set.
+
+#rt_avg_con1 = avg(congruent, duration1)
+#rt_avg_incon1 = avg(incon, duration1)
+
+
+
+#average RT's for misses in different trials
+rt_avg_con_miss = avg(congruent_miss, duration1) 
+rt_avg_incon_miss = avg(incon_miss, duration1)		
+
+
+#event_pair_table total(hit_con_shape_count)
+print "HITS SUMMARY"
+print "hits in congruent trials total ", "\t", congruent_count
+print "hits in incongruent trials total ", "\t", incon_count
+print "hits in congruent shape trials total ", "\t", hit_con_shape_count
+print "hits in congruent nonshape trials total ", "\t", hit_con_nonshape_count
+print "hits in incongruent shape trials total ", "\t", hit_incon_shape_count
+print "hits in incongruent nonshape trials total ", "\t", hit_incon_nonshape_count
+#reaction times
+print "Average RT for hits in congruent trials", "\t", rt_avg_con
+print "Average RT fot hits in incongruent trials", "\t", rt_avg_incon
+
+print " "
+print " "
+
+#event_pair_table total(miss_con_shape_count)
+print "INCORRECTS SUMMARY (TO BE UPDATED, waiting for a reply from neurobs forums)"
+print "misses in congruent trials total ", "\t", congruent_miss_count
+print "misses in incongruent trials total ", "\t", incon_miss_count
+print "misses in congruent shape trials total ", "\t", miss_con_shape_count
+print "misses in congruent nonshape trials total ", "\t", miss_con_nonshape_count
+print "misses in incongruent shape trials total ", "\t", miss_incon_shape_count
+print "misses in incongruent nonshape trials total ", "\t", miss_incon_nonshape_count
+#reaction times
+print "Average RT for misses in congruent trials", "\t", rt_avg_con_miss
+print "Average RT fot misses in incongruent trials", "\t", rt_avg_incon_miss
+
+
+
+
+
+
+
+#pair
+#avg( set_name, property_name )
+#The average value of the named property for all elements in the named set
+
+#hit_con_shape_count, hit_con_nonshape_count, hit_incon_shape_count, hit_incon_nonshape_count
+
+
+#event_table name( event_property1, event_property2, ... )
+#event_pair_table name( event_pair_property1, event_pair_property2, ... )
+ 
+
+#print
+#event_table_name( event_set_name, column_delim, line_delim )
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+# hit : stimulus code string contains response code string (199 or 190)
+# code2 appears inside code1
+#hit( pair ):: code1 contains code2
+#hits_count = count( hits )
+
+# miss : stimulus code string does not contain response code string (199 or 190)
+#miss( pair ):: (code1 contains code2) == false
+#misses_count = count( misses )
+
+# reaction times for hits and misses
+#hits_rt = avg(hit, time_diff )
+#misses_rt = avg( miss, time_diff )
+
+
+#event_pair_property type( hit, miss)
+
+#event_pair_table custom_pair_table( type, code2)
+
+
+
+ 
+
+
+
+ 
+#hit_congruent_shape( pair ):: event_type2 == response and X contains "Congruent shape target" and X( -1, -1 ) contains code
+#hit_congruent_shape_count = count( hit_congruent_shape )
+
+#hit_congruent_nonshape( pair ):: event_type == response and X contains "Congruent nonShape target" and X contains code
+#hit_congruent_nonshape_count = count( hit_congruent_nonshape )			#(-1, -1)
+
+
+#shape_response {congruent_shape_response}
+#congruent_shape_response()
+
+#190 is Ctrl 
+#199 is NumEnter
+
+#target 190
+#primer 0
+
+#step9
+#We have classified the event pairs into 4 sets.
+#However, what we really want is to just make an
+#addition table column that indicates the type of
+#event pair; we don't want to print out 4 different
+#tables. We can do this by defining a new custom event
+#pair property based on the event pair sets we have defined.
+# We call this property "type".
+
+#event_pair_table custom_pair_table(target1)
+
+
+# Step 10: Produce an output file
+
+
+ 
+
+
