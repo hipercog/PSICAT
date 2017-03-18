@@ -1,0 +1,106 @@
+# -------------------------------------------------------------------
+# THIS PCL PROGRAM RUNS A BLOCKED EXPERIMENT OF PRIMED KANIZSA SHAPES
+# -------------------------------------------------------------------
+
+logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz"));
+
+include "Kanizsa.pcl"
+
+#######-------#######-------#######-------#######-------#######-------
+# A subroutine to present the PSICAT task.
+sub
+	PSICATprotocol
+begin
+	# Number of trials per block
+	int t = 110;
+	# Instructions to begin the protocol
+/**/
+	sCRT_instr_trial.present();
+	sCRT_resp_trial.present();
+
+	# Instructions for each break between blocks in the protocol
+	sCRT_respPic.clear();
+	sCRT_respPic.add_part( sCRT_text_2, 0, 220 );
+	sCRT_respPic.add_part( rPadPic, 0, 0 );
+	sCRT_respAud_ev.set_stimulus( sound2_relax );
+/**/
+	stev.set_event_code( "Start block; ;1;irreg;" + string(t) );
+	stev.set_port_code( 145 );
+	startAll.present();
+	# 1st block
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 0, t );
+		# Have a break
+		sCRT_respPic.add_part( sCRT_text_2a, 0, -150 );
+		sCRT_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;2;irreg;" + string(t) );
+	stev.set_port_code( 146 );
+	startAll.present();
+	#2nd block
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 10, t );
+		# Have a break
+		sCRT_respPic.remove_part( 3 );
+		sCRT_respPic.add_part( sCRT_text_2b, 0, -150 );
+		sCRT_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;3;irreg;" + string(t) );
+	stev.set_port_code( 147 );
+	startAll.present();
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 20, t );
+		# Have a break
+		sCRT_respPic.remove_part( 3 );
+		sCRT_respPic.add_part( sCRT_text_2c, 0, -150 );
+		sCRT_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;4;irreg;" + string(t) );
+	stev.set_port_code( 148 );
+	startAll.present();
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 30, t );
+		# Have a break
+		sCRT_respPic.remove_part( 3 );
+		sCRT_respPic.add_part( sCRT_text_2d, 0, -150 );
+		sCRT_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;5;irreg;" + string(t) );
+	stev.set_port_code( 149 );
+	startAll.present();
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 40, t );
+
+
+/** DEBUG LOOP RANDOMISES THE REGULARITY OF EACH KANIZSA SHAPE
+	loop
+		int i = 1;
+	until
+		i > t
+	begin
+		if random() > 0.5 then
+			kanizsaBlock( false, "ellipse", 40, 1 );
+		else
+			kanizsaBlock( true, "ellipse", 40, 1 );
+		end;
+		i = i + 1 ;
+	end;
+/**/
+end;
+
+##########################################
+# Record that PSICAT.
+startAll.present();
+startAll.present();
+
+PSICATprotocol();
+
+endAll.present();
