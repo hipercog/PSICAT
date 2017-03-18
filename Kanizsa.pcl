@@ -2,7 +2,7 @@
 #	SUBROUTINES FOR CONGRUENT-/INCONGRUENT-PRIMED REGULAR/IRREGULAR KANIZSA SHAPES
 # ------------------------------------------------------------------------------
 
-# DON'T FORGET TO MIRROR THE TIMING AND COLOR CONSTANTS IN THE SCE FILE!
+# MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
 rgb_color bg = rgb_color(0, 0, 0, 0); ##0,0,0,0
 rgb_color fg = rgb_color(255, 255, 255, 0);
 rgb_color trans = rgb_color(255, 0, 0, 0);
@@ -698,20 +698,20 @@ end;
 
 
 
-#######-------#######-------#######-------#######-------#######-------#######-------
+#######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine that generates randomized kanizsa stimuli and primers
-#	regPoly		: this block will use regular:true or irregular:false shapes - we hypothesise that irregulars present a more difficult distinction with more mixed-up visual cues
-#	pacmantype	: this block will use ellipses or annuli as Pacmen - we hypothesise that annuli present a more difficult distinction with less visible angle (i.e. more is implied than shown)
+#	regPoly		: this block will use regular:true or irregular:false shapes
+#	pacmantype	: this block will use ellipses or annuli for each Pac-Man
 #	blockN		: the number of this block, increasing in increments of 10 from 0
 #	trialN		: the number of trials in this block
 #
 sub
-	saliency( bool regPoly, string pacmantype, int blockN, int trialN )
+	kanizsaBlock( bool regPoly, string pacmantype, int blockN, int trialN )
 begin
 	# Handy random number for making choices
 	double random_num = random();
 
-	# Control the number of vertices - this is just to maintain unpredictability
+	# Control the number of vertices
 	int vtx = random(3, 4);
 	# COORDINATE ARRAY
 	array <double> CS[vtx][2];
@@ -724,7 +724,7 @@ begin
 	# Set which trial type we have : congruent or incongruent
 	string trialtype;
 
-	# MY BIG FAT TRIAL GENERATING LOOP
+	# TRIAL GENERATING LOOP
 	loop
 		int i = trialN
 	until
@@ -733,8 +733,8 @@ begin
 		#fixation period
 		fixation_trial.present();
 /**
-Comment away if we want a fixed vertex count (triangles or quandrangles) FOR THIS BLOCK
-Get a Random number of vertices for the primer and Kanizsa, then resize arrays to current size
+Comment out for a fixed vertex count (triangles or quandrangles) FOR THIS BLOCK
+Get random num vertices for primer/Kanizsa, then resize arrays to current size
 */
 		vtx = random(3, 4);
 		CS.resize( vtx );
@@ -765,7 +765,7 @@ Get a Random number of vertices for the primer and Kanizsa, then resize arrays t
 			trialtype = "incongruent";
 		end;
 
-		# IF statement picks shape vs. nonshape (e.g. if the target is a shape or a nonshape)
+		# IF statement sets target as shape or nonshape
 		#
 		# TARGET IS A SHAPE
 		if random() > 0.5 then

@@ -6,8 +6,8 @@ Created:	01-05-2012
 Modded :	28-03-2017
 */
 
-scenario = "Saliency";
-pcl_file = "Saliency.pcl"; #code that actually runs the protocol
+scenario = "PSICAT";
+pcl_file = "PSICAT.pcl"; #code that actually runs the protocol
 
 write_codes = true; # Write all codes to parallel port (for EEG acquisition)
 pulse_width = 16; # Seems to work fine
@@ -32,7 +32,7 @@ $transparent = "1, 0, 0"; #transparency
 $TASK_START	= 254;
 $TASK_END	= 255;
 
-# Saliency Protocol codes
+# PSICAT Protocol codes
 $SOA	= 144;	# Stimulus onset asynchrony (or intertrial interval)
 $FIXA	= 143;	# fixation cross display.
 /**
@@ -203,7 +203,7 @@ trial {
 		#bitmap	sCRT_instr_nonshapePic;  x=250; y=10;  #x = 300
 		#text 	sCRT_text_1b; x=0; y=-250; #y=-200
 	} sCRT_instrPic;
-	time = 0; code = "SaliencyInstructions";
+	time = 0; code = "PSICAT Instructions";
 } sCRT_instr_trial;
 
 trial{

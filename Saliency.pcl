@@ -7,9 +7,9 @@ logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz"));
 include "Kanizsa.pcl"
 
 #######-------#######-------#######-------#######-------#######-------
-# A subroutine to present the saliency task.
+# A subroutine to present the PSICAT task.
 sub
-	saliencyProt
+	PSICATprotocol
 begin
 	# Number of trials per block
 	int t = 110;
@@ -29,7 +29,7 @@ begin
 	startAll.present();
 	# 1st block
 	# Block of irregular, elliptical Kanizsas
-	saliency( false, "ellipse", 0, t );
+	kanizsaBlock( false, "ellipse", 0, t );
 		# Have a break
 		sCRT_respPic.add_part( sCRT_text_2a, 0, -150 );
 		sCRT_resp_trial.present();
@@ -41,7 +41,7 @@ begin
 	startAll.present();
 	#2nd block
 	# Block of irregular, elliptical Kanizsas
-	saliency( false, "ellipse", 10, t );
+	kanizsaBlock( false, "ellipse", 10, t );
 		# Have a break
 		sCRT_respPic.remove_part( 3 );
 		sCRT_respPic.add_part( sCRT_text_2b, 0, -150 );
@@ -53,7 +53,7 @@ begin
 	stev.set_port_code( 147 );
 	startAll.present();
 	# Block of irregular, elliptical Kanizsas
-	saliency( false, "ellipse", 20, t );
+	kanizsaBlock( false, "ellipse", 20, t );
 		# Have a break
 		sCRT_respPic.remove_part( 3 );
 		sCRT_respPic.add_part( sCRT_text_2c, 0, -150 );
@@ -65,7 +65,7 @@ begin
 	stev.set_port_code( 148 );
 	startAll.present();
 	# Block of irregular, elliptical Kanizsas
-	saliency( false, "ellipse", 30, t );
+	kanizsaBlock( false, "ellipse", 30, t );
 		# Have a break
 		sCRT_respPic.remove_part( 3 );
 		sCRT_respPic.add_part( sCRT_text_2d, 0, -150 );
@@ -73,24 +73,23 @@ begin
 		# Save this and prior blocks
 		save_trial.present();
 
-/**
-BLOCK 5! WHAT IS YOUR FATE?! DO WE NEED 600 TRIALS? SHALL 500 NOT BE ENOUGH?
-*/
 	stev.set_event_code( "Start block; ;5;irreg;" + string(t) );
 	stev.set_port_code( 149 );
 	startAll.present();
 	# Block of irregular, elliptical Kanizsas
-	saliency( false, "ellipse", 40, t );
-/** /
+	kanizsaBlock( false, "ellipse", 40, t );
+
+
+/** DEBUG LOOP RANDOMISES THE REGULARITY OF EACH KANIZSA SHAPE
 	loop
 		int i = 1;
 	until
 		i > t
 	begin
 		if random() > 0.5 then
-			saliency( false, "ellipse", 40, 1 );
+			kanizsaBlock( false, "ellipse", 40, 1 );
 		else
-			saliency( true, "ellipse", 40, 1 );
+			kanizsaBlock( true, "ellipse", 40, 1 );
 		end;
 		i = i + 1 ;
 	end;
@@ -98,10 +97,10 @@ BLOCK 5! WHAT IS YOUR FATE?! DO WE NEED 600 TRIALS? SHALL 500 NOT BE ENOUGH?
 end;
 
 ##########################################
-# Record that SALIENCY.
+# Record that PSICAT.
 startAll.present();
 startAll.present();
 
-saliencyProt();
+PSICATprotocol();
 
 endAll.present();
