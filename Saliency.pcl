@@ -1,12 +1,12 @@
-# --------------------------------------------------------------------------------------------------------------------------
-#	PCL PROGRAM RUNS A BLOCKED EXPERIMENT OF PRIMED KANIZSA SHAPES
-# --------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------
+# THIS PCL PROGRAM RUNS A BLOCKED EXPERIMENT OF PRIMED KANIZSA SHAPES
+# -------------------------------------------------------------------
 
-logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz")); 
+logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz"));
 
 include "Kanizsa.pcl"
 
-#######-------#######-------#######-------#######-------#######-------#######-------
+#######-------#######-------#######-------#######-------#######-------
 # A subroutine to present the saliency task.
 sub
 	saliencyProt
@@ -35,11 +35,11 @@ begin
 		sCRT_resp_trial.present();
 		# Save this and prior blocks
 		save_trial.present();
-		
+
 	stev.set_event_code( "Start block; ;2;irreg;" + string(t) );
 	stev.set_port_code( 146 );
 	startAll.present();
-	#2nd block	
+	#2nd block
 	# Block of irregular, elliptical Kanizsas
 	saliency( false, "ellipse", 10, t );
 		# Have a break

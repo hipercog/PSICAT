@@ -1,10 +1,10 @@
-# --------------------------------------------------------------------------------------------------------------------------
-#	PCL PROGRAM PROVIDES SUBROUTINES TO RUN SHOW CONGRUENT AND INCONGRUENTLY PRIMED KANIZSA REGULAR & IRREGULAR SHAPES
-# --------------------------------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
+#	SUBROUTINES FOR CONGRUENT-/INCONGRUENT-PRIMED REGULAR/IRREGULAR KANIZSA SHAPES
+# ------------------------------------------------------------------------------
 
 # DON'T FORGET TO MIRROR THE TIMING AND COLOR CONSTANTS IN THE SCE FILE!
 rgb_color bg = rgb_color(0, 0, 0, 0); ##0,0,0,0
-rgb_color fg = rgb_color(255, 255, 255, 0); 
+rgb_color fg = rgb_color(255, 255, 255, 0);
 rgb_color trans = rgb_color(255, 0, 0, 0);
 int KNZA_DUR = forever;
 int INTF_DUR = 150;
@@ -12,7 +12,7 @@ int SOA_LOWER_DUR = 400;
 int SOA_UPPER_DUR = 600;
 
 # display_device.width seems to return an int (which is not what the documentation suggests)
-int screen_width = display_device.width(); 		#display_device.width();  
+int screen_width = display_device.width(); 		#display_device.width();
 int screen_height = display_device.height(); 		#display_device.height();
 
 # Diameter of the Pacmen
@@ -35,7 +35,7 @@ int min_y = int(dmtr + 20.0);
 int min_x = int(dmtr + 20.0);
 
 #######-------#######-------#######-------#######-------#######-------#######-------
-#	Creates a polygon specified by the coordinates in parameter 1. 
+#	Creates a polygon specified by the coordinates in parameter 1.
 #	coors			: array of intergers specifying coordinates of the polygon.
 #	dims			: width, height dimensions of the pacmen. All are round, equal-sized shapes, i.e. only one value needed for annuli, dims specifies the width and height of the outermost annulus
 #	prime			: whether this should be a primer (lines) or target (pacmen) stimulus
@@ -50,13 +50,13 @@ begin
 	lyne.add_line( coors[1][1], coors[1][2], coors[2][1], coors[2][2] );
 	lyne.set_next_join_type( join_circle );
 	loop
-		int i = 3;  
+		int i = 3;
 		int j = 1;
 	until
 		i > coors.count()
 	begin
 		lyne.line_to( coors[i][j], coors[i][j+1] );
-		i = i + 1;  
+		i = i + 1;
 	end;
 	lyne.line_to( coors[1][1], coors[1][2]);
 	if prime == false then
@@ -76,10 +76,10 @@ begin
 			end;
 		end;
 		if pacmantype == "annulus" then
-			double dims1_in = (dims/2.0)*0.75;  
-			double dims1_out = dims/2.0 ;	 					
-			double dims2_in = dims *0.75 ;  			  		
-			double dims2_out = dims ;					
+			double dims1_in = (dims/2.0)*0.75;
+			double dims1_out = dims/2.0 ;
+			double dims2_in = dims *0.75 ;
+			double dims2_out = dims ;
 			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
 			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
 			loop
@@ -109,7 +109,7 @@ begin
 end;
 
 
-	
+
 
 #######-------#######-------#######-------#######-------#######-------#######-------
 #	Subroutine to rotate a matrix about one of its own vertices
@@ -118,7 +118,7 @@ end;
 #	v		:	vertex to rotate about
 #	rot	:	rotation angle
 #
-sub 
+sub
 	array< double,2 > rotateMat( array< double,2 >& cs, int v, double rot )
 begin
 	# Coordinate count
@@ -168,7 +168,7 @@ end;
 #	A subroutine to make sure that Pacman triangles cover their ellipse, returns coordinates of rectangle necessary to correct.
 #	Returns true if the triangle already covered the roundy - false if a rectangle was needed.
 #	c		: coordinate matrix holds the triangle to be checked
-#	dims	: diameter of the Pacman - i.e. triangle height must be greater than half of this 
+#	dims	: diameter of the Pacman - i.e. triangle height must be greater than half of this
 #	http://math.stackexchange.com/questions/25286/2d-coordinates-of-a-point-along-a-line-based-on-d-and-m-where-am-i-messing
 #
 sub
@@ -178,8 +178,8 @@ begin
 	array< double > rect[4][2];
 	# Measure the height of the triangle. Coordinate 2 will be the apex.
 	# Area = http://www.mathopenref.com/coordtrianglearea.html
-	double area = abs((c[1][1]*(c[2][2] - c[3][2]) + 
-							 c[2][1]*(c[3][2] - c[1][2]) + 
+	double area = abs((c[1][1]*(c[2][2] - c[3][2]) +
+							 c[2][1]*(c[3][2] - c[1][2]) +
 							 c[3][1]*(c[1][2] - c[2][2]) )/2.0);
 	# Euclidean distance between contra-apical vertices is the triangle base length
 	double xdiffb = c[1][1] - c[3][1];
@@ -198,7 +198,7 @@ begin
 		double fy = 0.0;
 		double deltx = h;
 		double delty = h;
-	# onyl need thse defined here for debugging		
+	# onyl need thse defined here for debugging
 		double ax = 1.0;
 		double ay = 1.0;
 		######	MUST ORIENT NEW RECTANLGE CORRECTLY!	######
@@ -249,15 +249,15 @@ begin
 		rect[2][1] = c[3][1];	rect[2][2] = c[3][2];
 		rect[3][1] = p3x; 		rect[3][2] = p3y;
 		rect[4][1] = p4x; 		rect[4][2] = p4y;
-		
+
 		# Draw the correction polygon
 		lyne.add_polygon( rect, true, 1.0, 0.0 );
-		
+
 		# If we can't get the damn fill part to work, try sending back a signal to go for new random coordinates.
 		return false;
 	end;
 	return true;
-end;	
+end;
 
 
 #######-------#######-------#######-------#######-------#######-------#######-------
@@ -281,7 +281,7 @@ end;
 
 #######-------#######-------#######-------#######-------#######-------#######-------
 #	Subroutine which returns an appropriate triangle to draw over a roundy thing and get a Pacman
-#	Returns a 
+#	Returns a
 #	cs		: coordinates of the original roundy
 #	dm		: diameter of the roundy - triangles gotta be broader than this
 #	idx	: index of coordinate to form triangle from interval vertex arrays, next:
@@ -294,7 +294,7 @@ sub
 begin
 	# Return value - one triangle with the original coordinate at index 2 = apex.
 	array< double > out[3][2];
-	# The triangle apex 
+	# The triangle apex
 	out[2][1] = cs[1];
 	out[2][2] = cs[2];
 	# Pick the first point - either last midpoint or last two-thirds point.
@@ -313,12 +313,12 @@ begin
 		out[3][1] = mid3[1];
 		out[3][2] = mid3[2];
 	end;
-	
+
 	return out;
 end;
 
 #######-------#######-------#######-------#######-------#######-------#######-------
-#	Subroutine to generate a Kanizsa stimuli with randomly oriented Pacmen. This is deterministic 
+#	Subroutine to generate a Kanizsa stimuli with randomly oriented Pacmen. This is deterministic
 #	i.e. all randomness is generated outside and passed in so results can be replicated.
 #	coors			: array of intergers specifying coordinates of the polygon.
 #	dims			: width, height of Pacmen. As all are round, equal-sized shapes, only one value needed i.e. for annuli, dims = width and height of outermost annulus
@@ -326,7 +326,7 @@ end;
 #	pacmantype	: whether we use annuli or ellipse pacmen - probably to be redacted for real experiment.
 #	rts			: an array of degrees of rotation, useful to make two identically randomised nonshapes - primer and Kanizsa
 #
-sub 
+sub
 	nonshape( array< double,2 >& coors, double dims, bool prime, string pacmantype, array< double,1 >& rts )
 begin
 	pyc.clear();
@@ -336,9 +336,9 @@ begin
 	int cnt = coors.count();
 
 	# Get midpoints so we can draw triangles into the Pacmen.
-	array< double > mids[cnt][2]; 
+	array< double > mids[cnt][2];
 	# Get points between mid and coors so we can draw smaller triangles into the Pacmen.
-	array< double > thrd[cnt][2]; 
+	array< double > thrd[cnt][2];
 	# Get points between mid and coors+1 so we can draw triangles into the Pacmen.
 	array< double > twth[cnt][2];
 
@@ -350,7 +350,7 @@ begin
 		i > cnt
 	begin
 		mids[i][1] = (coors[i][1] + coors[i%cnt+1][1])/2.0;		mids[i][2] = (coors[i][2] + coors[i%cnt+1][2])/2.0;
-		
+
 		if prime == true then
 			# Choose longer lines to display salience better
 			thrd[i][1] = (coors[i][1]*2.0 + coors[i%cnt+1][1])/3.0;	thrd[i][2] = (coors[i][2]*2.0 + coors[i%cnt+1][2])/3.0;
@@ -373,7 +373,7 @@ begin
 				dist = euc(coors[i][1], coors[i][2], xt, yt);
 			end;
 			thrd[i][1] = xt;	thrd[i][2] = yt;
-			
+
 			# We select nearest valid point to coors.i+1 x, y (have to mod i by the count of vertices to wrap around)
 			xt = mids[i][1];
 			yt = mids[i][2];
@@ -415,7 +415,7 @@ begin
 		# Do likewise for all other Pacmen
 		loop
 			int k = 2;
-		until 
+		until
 			k > cnt
 		begin
 			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
@@ -440,9 +440,9 @@ begin
 			end;
 			pacman_e.redraw();
 		elseif pacmantype == "annulus" then
-			double dims1_in = (dims/2.0)*0.75; 		#(dims/2.0)*0.75; 
-			double dims1_out = dims/2.0 ;	 			#dims/2.0;			
-			double dims2_in = dims *0.75 ;  			#dims*0.75;  		
+			double dims1_in = (dims/2.0)*0.75; 		#(dims/2.0)*0.75;
+			double dims1_out = dims/2.0 ;	 			#dims/2.0;
+			double dims2_in = dims *0.75 ;  			#dims*0.75;
 			double dims2_out = dims ;					#dims
 			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
 			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
@@ -460,7 +460,7 @@ begin
 		else
 			return; # NO VALID PACMAN GIVEN. WTF?
 		end;
-		
+
 	#### If prime is true, just draw the outline shape ####
 	else
 		# Set the requisite primer colours
@@ -477,7 +477,7 @@ begin
 		# Now do likewise for all remaining Pacmen
 		loop
 			int k = 2;
-		until 
+		until
 			k > cnt
 		begin
 			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
@@ -489,7 +489,7 @@ begin
 		end;
 /**
 	USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
-*/		
+*/
 		# Pick a Pacman type - Ellipse, Annullus or wrong.
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
@@ -504,9 +504,9 @@ begin
 			end;
 			pacman_e.redraw();
 		elseif pacmantype == "annulus" then
-			double dims1_in = (dims/2.0)*0.75; 		#(dims/2.0)*0.75; 
-			double dims1_out = dims/2.0 ;	 			#dims/2.0;			
-			double dims2_in = dims *0.75 ;  			#dims*0.75;  		
+			double dims1_in = (dims/2.0)*0.75; 		#(dims/2.0)*0.75;
+			double dims1_out = dims/2.0 ;	 			#dims/2.0;
+			double dims2_in = dims *0.75 ;  			#dims*0.75;
 			double dims2_out = dims ;					#dims
 			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
 			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
@@ -543,10 +543,10 @@ sub
 begin
 	# Return value
 	array< double > out[vts][2];
-	
+
 	# Randomly generate the coordinates within certain constrainted screen areas.
 	# If REGULAR polygon:
-	if regPoly == true then	
+	if regPoly == true then
 
 		if vts == 4 then
 			out[1][1] = double(random(-1* max_x, -1* min_x)); 		#(random(-250, -85)
@@ -557,7 +557,7 @@ begin
 			#assign the rest of the coordinate values
 			out[2][1] = -1.0*constant_x;
 			out[2][2] = constant_y;
-			out[3][1] = -1.0*constant_x; 
+			out[3][1] = -1.0*constant_x;
 			out[3][2] = -1.0*constant_y;
 			out[4][1] = constant_x;
 			out[4][2] = -1.0*constant_y;
@@ -570,7 +570,7 @@ begin
 				out[1][2] = double(random(min_y, max_y));				#random(250, 85)
 				# If point 1 has landed in the (vertically) central region, we have an up-pointing triangle.
 				# Note exclusion zone is roughly 50% of probability space
-				if out[1][1] < double((max_x/2)) && out[1][1] > double(-1*(max_x/2)) then 		#out[1][1] < 125.0 || out[1][1] > -125.0 
+				if out[1][1] < double((max_x/2)) && out[1][1] > double(-1*(max_x/2)) then 		#out[1][1] < 125.0 || out[1][1] > -125.0
 					# Both other vertices will be in lower half
 					# X points of v2 & v3 will be eqidistant from v1:x1
 					flip = double(random(min_x/2, max_x/2));
@@ -590,7 +590,7 @@ begin
 				out[1][1] = double(random(-1*max_x, -1*min_x)); 	#random(-250, -85)
 				out[1][2] = double(random(-1*max_y, max_y));		#random(-250, 250)
 				# If point 1 has landed in the (horizontally) central region, we have an left-pointing triangle.
-				if out[1][2] < double((max_y/2)) && out[1][2] > double(-1*(max_y/2)) then 
+				if out[1][2] < double((max_y/2)) && out[1][2] > double(-1*(max_y/2)) then
 					# Both other vertices will be in right half
 					# Y points of v2 & v3 will be eqidistant from v1:y1
 					flip = double(random(min_y/2, max_y/2));
@@ -609,7 +609,7 @@ begin
 		end;
 	# if IRREGULAR polygon
 	else #if regPoly is false
- 
+
 		if vts == 4 then
 			out[1][1] = double(-1*random(max_x, min_x));		 # -250, -85
 			out[1][2] = double(random(min_y, max_y)); 			#double(random(250, 85)); -> should've been (85, 250)
@@ -619,11 +619,11 @@ begin
 			out[3][2] = double(-1*random(min_y, max_y));			#double(random(-85, -250));
 			out[4][1] = double(-1*random(min_x, max_x));			#double(random(-85, -250));
 			out[4][2] = double(-1*random(min_y, max_y));			#double(random(-85, -250));
-		else	
+		else
 			vts = random(1, 2);
 			# Make a triangle with an up or down-pointing apex.
 			if vts == 1 then
-				out[1][1] = double(random(-1*max_x, min_x)); 		#(random(-250, 85)); 
+				out[1][1] = double(random(-1*max_x, min_x)); 		#(random(-250, 85));
 				out[1][2] = double(random(min_y, max_y));				#(random(250, 85));
 				# If vertex 1 has landed in the top left quadrant, we have a down-pointing triangle.
 				if out[1][1] < double(-1*min_x) then
@@ -645,7 +645,7 @@ begin
 			# Make a left or right pointing triangle.
 			else #if vts == 2 then
 				# Put the first point somewhere in the left half, from below y axis to max_y
-				out[1][1] = double(random(-1*max_x, -1*min_x)); 	#(random(-250, -85)); 
+				out[1][1] = double(random(-1*max_x, -1*min_x)); 	#(random(-250, -85));
 				out[1][2] = double(random(-1*min_y, max_y));			#(random(250, -85));
 				# If vertex 1 has landed in the top left quadrant, we have a right-pointing triangle.
 				if out[1][2] > double(min_y) then
@@ -667,7 +667,7 @@ begin
 			end;
 		end;
 	end;
-	
+
 	return out;
 end;
 
@@ -692,7 +692,7 @@ begin
 		rnd[r] = random()*max + min;
 		r = r+1;
 	end;
-	
+
 	return rnd;
 end;
 
@@ -723,7 +723,7 @@ begin
 
 	# Set which trial type we have : congruent or incongruent
 	string trialtype;
-	
+
 	# MY BIG FAT TRIAL GENERATING LOOP
 	loop
 		int i = trialN
@@ -735,7 +735,7 @@ begin
 /**
 Comment away if we want a fixed vertex count (triangles or quandrangles) FOR THIS BLOCK
 Get a Random number of vertices for the primer and Kanizsa, then resize arrays to current size
-*/		
+*/
 		vtx = random(3, 4);
 		CS.resize( vtx );
 		rnd.resize( vtx );
@@ -756,7 +756,7 @@ Get a Random number of vertices for the primer and Kanizsa, then resize arrays t
 		end;
 		log_coors = log_coors + ",";
 		log_coors = log_coors + "]";
-	
+
 		#randomize trialtype (congruent vs. incongruent)
 		random_num = random();
 		if random_num > 0.5 then
@@ -777,7 +777,7 @@ Get a Random number of vertices for the primer and Kanizsa, then resize arrays t
 					nonshape(CS, dmtr, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(151 + blockN) + ";Congruent;shape;primer;" + string(vtx) );	ev.set_port_code( 151+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
-							
+
 				#SHAPE TARGET
 					polyfilla(CS, dmtr, false, pacmantype);
 					ev.set_event_code( log_coors  + ";" + string(152 + blockN) + ";Congruent;shape;target;" + string(vtx)  );	ev.set_port_code( 152+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
@@ -790,7 +790,7 @@ Get a Random number of vertices for the primer and Kanizsa, then resize arrays t
 					nonshape(CS, dmtr, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(153 + blockN) + ";InCon;nonShape;primer;" + string(vtx)  );	ev.set_port_code( 153+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
-					
+
 				#SHAPE TARGET
 					polyfilla(CS, dmtr, false, pacmantype);
 					ev.set_event_code( log_coors  + ";" + string(154 + blockN) + ";InCon;shape;target;" + string(vtx) );	ev.set_port_code( 154+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
@@ -806,7 +806,7 @@ Get a Random number of vertices for the primer and Kanizsa, then resize arrays t
 					nonshape(CS, dmtr, true, pacmantype, rnd);
 					ev.set_event_code( log_coors  + ";" + string(155 + blockN) + ";Congruent;nonShape;primer;" + string(vtx) );	ev.set_port_code( 155+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
-					
+
 				#NONSHAPE TARGET
 					nonshape(CS, dmtr, false, pacmantype, rnd);
 					ev.set_event_code( log_coors  + ";" + string(156 + blockN) + ";Congruent;nonShape;target;" + string(vtx) );	ev.set_port_code( 156+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
@@ -827,15 +827,15 @@ Get a Random number of vertices for the primer and Kanizsa, then resize arrays t
 					# show nonshape primer
 					nonshape(CS, dmtr, false, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(158 + blockN) + ";InCon;nonShape;target;" + string(vtx)  );	ev.set_port_code( 158+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
-					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();				
+					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
 		end;
-			
+
 		i = i-1;
-			
+
 		#intertrial interval
 		SOA_trial.set_duration( random(SOA_LOWER_DUR, SOA_UPPER_DUR) );
-		SOA_trial.present();		
+		SOA_trial.present();
 
 	end;
 end;
