@@ -8,6 +8,9 @@ Modded :	28-03-2017
 
 # FIXME TODO: can do language localisation?
 # FIXME TODO: check all defaults are needed?
+# FIXME TODO: all GLOBAL defaults to UPPERCASE
+# FIXME TODO: Document and Header code sections
+# FIXME TODO: copy to PSICATpractice.sce
 
 
 scenario = "PSICAT";

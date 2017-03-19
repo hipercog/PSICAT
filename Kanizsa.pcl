@@ -3,39 +3,40 @@
 # ------------------------------------------------------------------------------
 
 # MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
-rgb_color bg = rgb_color(0, 0, 0, 0); ##0,0,0,0
-rgb_color fg = rgb_color(255, 255, 255, 0);
-rgb_color trans = rgb_color(255, 0, 0, 0);
+rgb_color BKGD_COLOR = rgb_color(0, 0, 0, 0); ##0,0,0,0
+rgb_color FOREGD_CLR = rgb_color(255, 255, 255, 0);
+rgb_color TRNSPRNCY = rgb_color(255, 0, 0, 0);
+
 int KNZA_DUR = forever;
 int INTF_DUR = 150;
 int SOA_LOWER_DUR = 400;
 int SOA_UPPER_DUR = 600;
 
 # display_device.width seems to return an int (which is not what the documentation suggests)
-int screen_width = display_device.width(); 		#display_device.width();
-int screen_height = display_device.height(); 		#display_device.height();
+int screen_width = display_device.width();
+int screen_height = display_device.height();
 
 # Diameter of the Pacmen
-double dmtr = double(screen_height) / 6.0;
+double PAC_DIAM = double(screen_height) / 6.0;
 if screen_height > screen_width then
-	dmtr = double(screen_width) / 6.0;
+	PAC_DIAM = double(screen_width) / 6.0;
 end;
 
 # highest absolute value of y-coordinate on the screen
-double total_max_y = double(display_device.height()/2);
+double total_max_y = double(display_device.height() / 2);
 # highest absolute value of x-coordinate
-double total_max_x = double(display_device.width()/2);
+double total_max_x = double(display_device.width() / 2);
 
 # for randomized coordinates, highest acceptable x- or y-coordinate absolute value for quadrangle
-int max_y = int(total_max_y - 2.0 * dmtr);
-int max_x = int(total_max_x - 2.0 * dmtr);
+int MAX_Y = int(total_max_y - 2.0 * PAC_DIAM);
+int MAX_X = int(total_max_x - 2.0 * PAC_DIAM);
 
 # lowest acceptable x- or y-coordinate absolute value for quadragle is diameter of the pacman plus 10px
-int min_y = int(dmtr + 20.0);
-int min_x = int(dmtr + 20.0);
+int MIN_Y = int(PAC_DIAM + 20.0);
+int MIN_X = int(PAC_DIAM + 20.0);
 
 #######-------#######-------#######-------#######-------#######-------#######-------
-#	Creates a polygon specified by the coordinates in parameter 1.
+#	Subroutine creates a polygon specified by the coordinates in parameter 1.
 #	coors			: array of intergers specifying coordinates of the polygon.
 #	dims			: width, height dimensions of the pacmen. All are round, equal-sized shapes, i.e. only one value needed for annuli, dims specifies the width and height of the outermost annulus
 #	prime			: whether this should be a primer (lines) or target (pacmen) stimulus
@@ -63,7 +64,7 @@ begin
 		# Pick a pacman
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
-			pacman_e.set_color( fg );
+			pacman_e.set_color( FOREGD_CLR );
 			pacman_e.redraw();
 			loop
 				int i = 1;
@@ -96,12 +97,12 @@ begin
 			end;
 		end;
 		# Set the lyne properties
-		lyne.set_line_color( bg );
-		lyne.set_next_fill_color( bg );
+		lyne.set_line_color( BKGD_COLOR );
+		lyne.set_next_fill_color( BKGD_COLOR );
 	# If prime is true, just draw the outline shape
 	else
-		lyne.set_line_color( fg );
-		lyne.set_next_fill_color( bg );
+		lyne.set_line_color( FOREGD_CLR );
+		lyne.set_next_fill_color( BKGD_COLOR );
 	end;
 	lyne.close(true);
 	lyne.redraw();
@@ -136,7 +137,7 @@ begin
 	begin
 		cs[i][1] = cs[i][1] + tranX;
 		cs[i][2] = cs[i][2] + tranY;
-		i = i+1;
+		i = i + 1;
 	end;
 	# ROTATE MATRIX
 	loop
@@ -144,8 +145,8 @@ begin
 	until
 		i > cnt
 	begin
-		out[i][1] = cs[i][1]*cos(rot) - cs[i][2]*sin(rot);	# x' of vertex i
-		out[i][2] = cs[i][1]*sin(rot) + cs[i][2]*cos(rot);	# y' of vertex i
+		out[i][1] = cs[i][1] * cos(rot) - cs[i][2] * sin(rot);	# x' of vertex i
+		out[i][2] = cs[i][1] * sin(rot) + cs[i][2] * cos(rot);	# y' of vertex i
 		i = i+1;
 	end;
 	# Perform reverse translation
@@ -156,7 +157,7 @@ begin
 	begin
 		out[i][1] = out[i][1] - tranX;
 		out[i][2] = out[i][2] - tranY;
-		i = i+1;
+		i = i + 1;
 	end;
 	return out;
 end;
@@ -165,7 +166,7 @@ end;
 
 
 #######-------#######-------#######-------#######-------#######-------#######-------
-#	A subroutine to make sure that Pacman triangles cover their ellipse, returns coordinates of rectangle necessary to correct.
+#	Subroutine to make sure that Pacman triangles cover their ellipse, returns coordinates of rectangle necessary to correct.
 #	Returns true if the triangle already covered the roundy - false if a rectangle was needed.
 #	c		: coordinate matrix holds the triangle to be checked
 #	dims	: diameter of the Pacman - i.e. triangle height must be greater than half of this
@@ -178,19 +179,20 @@ begin
 	array< double > rect[4][2];
 	# Measure the height of the triangle. Coordinate 2 will be the apex.
 	# Area = http://www.mathopenref.com/coordtrianglearea.html
-	double area = abs((c[1][1]*(c[2][2] - c[3][2]) +
-							 c[2][1]*(c[3][2] - c[1][2]) +
-							 c[3][1]*(c[1][2] - c[2][2]) )/2.0);
+	double area = abs((c[1][1] * (c[2][2] - c[3][2]) +
+							       c[2][1] * (c[3][2] - c[1][2]) +
+							       c[3][1] * (c[1][2] - c[2][2]) ) / 2.0);
 	# Euclidean distance between contra-apical vertices is the triangle base length
+# TODO - REPLACE WITH euc()
 	double xdiffb = c[1][1] - c[3][1];
 	double ydiffb = c[1][2] - c[3][2];
-	double base = sqrt( (xdiffb*xdiffb) + (ydiffb*ydiffb) );
+	double base = sqrt( (xdiffb * xdiffb) + (ydiffb * ydiffb) );
 	# Area equals half of height by base, so the apex-base-intersect lyne (abil) height is:
-	double height = (area*2.0)/base;
+	double height = (area * 2.0) / base;
 	# Check if this has covered the round shape to create a convincing Pacman
-	if height < dims/2.0 then
+	if height < dims / 2.0 then
 		# Extension length = Pacman radius minus existing triangle height
-		double h = dims/2.0 - height;
+		double h = dims / 2.0 - height;
 		# Init slope, orientation and offset variables.
 		double mh = 0.0;	# Set default for if base is horizontal
 		double mb = 0.0;
@@ -198,7 +200,7 @@ begin
 		double fy = 0.0;
 		double deltx = h;
 		double delty = h;
-	# onyl need thse defined here for debugging
+	# these are defined here for debugging
 		double ax = 1.0;
 		double ay = 1.0;
 		######	MUST ORIENT NEW RECTANLGE CORRECTLY!	######
@@ -213,12 +215,12 @@ begin
 				# angle of the abil with respect to x-axis
 				double alpha = arctan( mh );
 				# Offset of the new x,y points (wrt to the base vertices)
-				deltx = abs(h*cos( alpha ));
-				delty = abs(h*sin( alpha ));
+				deltx = abs(h * cos( alpha ));
+				delty = abs(h * sin( alpha ));
 
 				#	Apex-base intersection point - solve for x and y from the point-slope equations
-				ax = (mb*c[1][1] - mh*c[2][1] - c[1][2] + c[2][2]) / (mb - mh);
-				ay = (mh*ax - mh*c[2][1]) + c[2][2];
+				ax = (mb * c[1][1] - mh * c[2][1] - c[1][2] + c[2][2]) / (mb - mh);
+				ay = (mh * ax - mh * c[2][1]) + c[2][2];
 				# Offset orientation of new x,y points with respect to apex point
 				if ax < c[2][1] then
 					fx = -1.0;
@@ -239,8 +241,8 @@ begin
 			fy = (c[1][2] - c[2][2]) / abs(c[1][2] - c[2][2]);
 		end;
 		# Orientation and offset in x and y
-		fx = deltx*fx;
-		fy = delty*fy;
+		fx = deltx * fx;
+		fy = delty * fy;
 		# Extra points needed. If triangle base is vertical, y's are unchanged. If horizontal, x's unchanged.
 		double p4x = c[1][1] + fx;	double p4y = c[1][2] + fy;
 		double p3x = c[3][1] + fx;	double p3y = c[3][2] + fy;
@@ -253,7 +255,7 @@ begin
 		# Draw the correction polygon
 		lyne.add_polygon( rect, true, 1.0, 0.0 );
 
-		# If we can't get the damn fill part to work, try sending back a signal to go for new random coordinates.
+		# report that fill part not working, to prompt for new random coordinates.
 		return false;
 	end;
 	return true;
@@ -273,7 +275,7 @@ sub
 begin
 	double xdiff = x1 - x2;
 	double ydiff = y1 - y2;
-	double euc = sqrt( (xdiff*xdiff) + (ydiff*ydiff) );
+	double euc = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
 	return euc;
 end;
 
@@ -298,7 +300,7 @@ begin
 	out[2][1] = cs[1];
 	out[2][2] = cs[2];
 	# Pick the first point - either last midpoint or last two-thirds point.
-	if euc( cs[1], cs[2], twth[1], twth[2] ) > dm/2.0 then
+	if euc( cs[1], cs[2], twth[1], twth[2] ) > dm / 2.0 then
 		out[1][1] = twth[1];
 		out[1][2] = twth[2];
 	else
@@ -306,7 +308,7 @@ begin
 		out[1][2] = mid1[2];
 	end;
 	# Pick the last point - either next midpoint or next one-third point.
-	if euc( cs[1], cs[2], thrd[1], thrd[2] ) > dm/2.0 then
+	if euc( cs[1], cs[2], thrd[1], thrd[2] ) > dm / 2.0 then
 		out[3][1] = thrd[1];
 		out[3][2] = thrd[2];
 	else
@@ -327,7 +329,7 @@ end;
 #	rts			: an array of degrees of rotation, useful to make two identically randomised nonshapes - primer and Kanizsa
 #
 sub
-	nonshape( array< double,2 >& coors, double dims, bool prime, string pacmantype, array< double,1 >& rts )
+	kanizsaShape( array< double,2 >& coors, double dims, bool prime, string pacmantype, array< double,1 >& rts )
 begin
 	pyc.clear();
 	lyne.clear();
@@ -349,12 +351,15 @@ begin
 	until
 		i > cnt
 	begin
-		mids[i][1] = (coors[i][1] + coors[i%cnt+1][1])/2.0;		mids[i][2] = (coors[i][2] + coors[i%cnt+1][2])/2.0;
+		mids[i][1] = (coors[i][1] + coors[i % cnt + 1][1]) / 2.0;
+    mids[i][2] = (coors[i][2] + coors[i % cnt + 1][2]) / 2.0;
 
 		if prime == true then
 			# Choose longer lines to display salience better
-			thrd[i][1] = (coors[i][1]*2.0 + coors[i%cnt+1][1])/3.0;	thrd[i][2] = (coors[i][2]*2.0 + coors[i%cnt+1][2])/3.0;
-			twth[i][1] = (coors[i][1] + coors[i%cnt+1][1]*2.0)/3.0;	twth[i][2] = (coors[i][2] + coors[i%cnt+1][2]*2.0)/3.0;
+			thrd[i][1] = (coors[i][1] * 2.0 + coors[i % cnt + 1][1]) / 3.0;
+      thrd[i][2] = (coors[i][2] * 2.0 + coors[i % cnt + 1][2]) / 3.0;
+			twth[i][1] = (coors[i][1] + coors[i % cnt + 1][1] * 2.0) / 3.0;
+      twth[i][2] = (coors[i][2] + coors[i % cnt + 1][2] * 2.0) / 3.0;
 		else
 			# Choose shorter lines to prevent covering other Pacmen inadvertently
 			# We select nearest valid point to coors.i x, y
@@ -363,7 +368,7 @@ begin
 			loop
 				double dist = euc(coors[i][1], coors[i][2], xt, yt);
 			until
-				dist < dmtr + 20.0
+				dist < PAC_DIAM + 20.0
 			begin
 				# update xt, yt
 				#xt = midpoint of coors x, xt
@@ -378,20 +383,20 @@ begin
 			xt = mids[i][1];
 			yt = mids[i][2];
 			loop
-				double dist = euc(coors[i%cnt+1][1], coors[i%cnt+1][2], xt, yt);
+				double dist = euc(coors[i % cnt + 1][1], coors[i % cnt + 1][2], xt, yt);
 			until
-				dist < dmtr + 20.0
+				dist < PAC_DIAM + 20.0
 			begin
 				# update xt, yt
 				#xt = midpoint of coors x, xt
-				xt = (coors[i%cnt+1][1] + xt)/2.0;
+				xt = (coors[i % cnt + 1][1] + xt) / 2.0;
 				#yt = midpoint of coors y, yt
-				yt = (coors[i%cnt+1][2] + yt)/2.0;
-				dist = euc(coors[i%cnt+1][1], coors[i%cnt+1][2], xt, yt);
+				yt = (coors[i % cnt + 1][2] + yt) / 2.0;
+				dist = euc(coors[i % cnt + 1][1], coors[i % cnt + 1][2], xt, yt);
 			end;
 			twth[i][1] = xt;	twth[i][2] = yt;
 		end;
-		i = i+1;
+		i = i + 1;
 	end;
 
 	# Create triangle array
@@ -401,17 +406,20 @@ begin
 	# Adjust behaviour for primer or Kanizsa
 	if prime == false then
 		# Set the requisite Kanizsa shape properties
-		lyne.set_line_color( bg );
-		lyne.set_next_fill_color( bg );
+		lyne.set_line_color( BKGD_COLOR );
+		lyne.set_next_fill_color( BKGD_COLOR );
+
 		# Initialise triangle vertices to fill the first Pacman
 		tri = triFill( coors[1], dims, mids[cnt], mids[1], thrd[1], twth[cnt] );
 #		tri[1] = thrd[cnt];		tri[2] = coors[1];		tri[3] = twth[1];
+
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
 		# Add the triangle polygon
 		lyne.add_polygon( tri, true, 1.0, 0.0 );
 		# Check the triangle has filled the Pacman
 		correctTri(tri, dims);
+
 		# Do likewise for all other Pacmen
 		loop
 			int k = 2;
@@ -423,27 +431,27 @@ begin
 			tri = rotateMat(tri, 2, rts[k]);
 			lyne.add_polygon( tri, true, 1.0, 0.0 );
 			correctTri(tri, dims);
-			k = k+1;
+			k = k + 1;
 		end;
 
 		# Pick a Pacman type - Ellipse, Annullus or wrong.
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
-			pacman_e.set_color( fg );
+			pacman_e.set_color( FOREGD_CLR );
 			loop
 				int i = 1;
 			until
 				i > cnt
 			begin
 				pyc.add_part(pacman_e, coors[i][1], coors[i][2]);
-				i = i+1;
+				i = i + 1;
 			end;
 			pacman_e.redraw();
 		elseif pacmantype == "annulus" then
-			double dims1_in = (dims/2.0)*0.75; 		#(dims/2.0)*0.75;
-			double dims1_out = dims/2.0 ;	 			#dims/2.0;
-			double dims2_in = dims *0.75 ;  			#dims*0.75;
-			double dims2_out = dims ;					#dims
+			double dims1_in = (dims / 2.0) * 0.75;
+			double dims1_out = dims / 2.0;
+			double dims2_in = dims * 0.75;
+			double dims2_out = dims;
 			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
 			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
 			loop
@@ -455,37 +463,41 @@ begin
 				pyc.add_part(annulus2, coors[i][1], coors[i][2]);
 				annulus1.redraw();
 				annulus2.redraw();
-				i = i+1;
+				i = i + 1;
 			end;
 		else
-			return; # NO VALID PACMAN GIVEN. WTF?
+			return; # NO VALID PACMAN GIVEN...???
 		end;
 
 	#### If prime is true, just draw the outline shape ####
+# TODO - REPLACE DUPLICATE CODE WITH SUBROUTINE?
 	else
 		# Set the requisite primer colours
-		lyne.set_line_color( trans ); # trans for red, fg for white
-		lyne.set_next_fill_color( bg );
+		lyne.set_line_color( TRNSPRNCY ); # TRNSPRNCY for red, FOREGD_CLR for white
+		lyne.set_next_fill_color( BKGD_COLOR );
+
 		# Initialise triangle vertices to fill the first Pacman
 		tri = triFill( coors[1], dims, mids[cnt], mids[1], thrd[1], twth[cnt] );
 #		tri[1] = thrd[cnt];		tri[2] = coors[1];		tri[3] = twth[1];
+
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
 		# Then add the two required lines. No need to check for Pacman fill here!
 		lyne.add_line( tri[1][1], tri[1][2], tri[2][1], tri[2][2] );
 		lyne.line_to( tri[3][1], tri[3][2] );
+
 		# Now do likewise for all remaining Pacmen
 		loop
 			int k = 2;
 		until
 			k > cnt
 		begin
-			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
+			tri = triFill( coors[k], dims, mids[k - 1], mids[k], thrd[k], twth[k - 1] );
 #			tri[1] = thrd[k-1];		tri[2] = coors[k];		tri[3] = twth[k];
 			tri = rotateMat(tri, 2, rts[k]);
 			lyne.add_line( tri[1][1], tri[1][2], tri[2][1], tri[2][2] );
 			lyne.line_to( tri[3][1], tri[3][2] );
-			k = k+1;
+			k = k + 1;
 		end;
 /**
 	USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
@@ -493,21 +505,21 @@ begin
 		# Pick a Pacman type - Ellipse, Annullus or wrong.
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
-			pacman_e.set_color( fg );
+			pacman_e.set_color( FOREGD_CLR );
 			loop
 				int i = 1;
 			until
 				i > cnt
 			begin
 				pyc.add_part(pacman_e, coors[i][1], coors[i][2]);
-				i = i+1;
+				i = i + 1;
 			end;
 			pacman_e.redraw();
 		elseif pacmantype == "annulus" then
-			double dims1_in = (dims/2.0)*0.75; 		#(dims/2.0)*0.75;
-			double dims1_out = dims/2.0 ;	 			#dims/2.0;
-			double dims2_in = dims *0.75 ;  			#dims*0.75;
-			double dims2_out = dims ;					#dims
+			double dims1_in = (dims / 2.0) * 0.75;
+			double dims1_out = dims / 2.0;
+			double dims2_in = dims * 0.75;
+			double dims2_out = dims;
 			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
 			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
 			loop
@@ -519,10 +531,10 @@ begin
 				pyc.add_part(annulus2, coors[i][1], coors[i][2]);
 				annulus1.redraw();
 				annulus2.redraw();
-				i = i+1;
+				i = i + 1;
 			end;
 		else
-			return; # NO VALID PACMAN GIVEN. WTF?
+			return; # NO VALID PACMAN GIVEN...?
 		end;
 /**/
 	end;
@@ -534,7 +546,7 @@ end;
 
 
 #######-------#######-------#######-------#######-------#######-------#######-------
-#  subroutine that returns an [i][2] array of randomized coordinates
+#  Subroutine that returns an [i][2] array of randomized coordinates
 #	regPoly	:	true = regular - coordinates creates a regular shape, false = irregular - coordinates create an irregular shape
 #  vts		:	number of vertices in the shape
 #
@@ -544,65 +556,65 @@ begin
 	# Return value
 	array< double > out[vts][2];
 
-	# Randomly generate the coordinates within certain constrainted screen areas.
+	# Randomly generate the coordinates within certain constrained screen areas.
 	# If REGULAR polygon:
 	if regPoly == true then
 
 		if vts == 4 then
-			out[1][1] = double(random(-1* max_x, -1* min_x)); 		#(random(-250, -85)
-			out[1][2] = double(random(min_y, max_y));					#(random(250, 85))
+			out[1][1] = double(random(-1 * MAX_X, -1 * MIN_X)); 		#(random(-250, -85)
+			out[1][2] = double(random(MIN_Y, MAX_Y));					#(random(250, 85))
 			#save the constant values
 			double constant_x = out[1][1];
 			double constant_y = out[1][2];
 			#assign the rest of the coordinate values
-			out[2][1] = -1.0*constant_x;
+			out[2][1] = -1.0 * constant_x;
 			out[2][2] = constant_y;
-			out[3][1] = -1.0*constant_x;
-			out[3][2] = -1.0*constant_y;
+			out[3][1] = -1.0 * constant_x;
+			out[3][2] = -1.0 * constant_y;
 			out[4][1] = constant_x;
-			out[4][2] = -1.0*constant_y;
+			out[4][2] = -1.0 * constant_y;
 		else
 			vts = random(1, 2);
 			double flip = 0.0;
 			# Make a triangle with a horizontal base and up or down-pointing apex.
 			if vts == 1 then
-				out[1][1] = double(random(-1*max_x, max_x)); 		#random(-250, 250)
-				out[1][2] = double(random(min_y, max_y));				#random(250, 85)
+				out[1][1] = double(random(-1 * MAX_X, MAX_X)); 		#random(-250, 250)
+				out[1][2] = double(random(MIN_Y, MAX_Y));				#random(250, 85)
 				# If point 1 has landed in the (vertically) central region, we have an up-pointing triangle.
 				# Note exclusion zone is roughly 50% of probability space
-				if out[1][1] < double((max_x/2)) && out[1][1] > double(-1*(max_x/2)) then 		#out[1][1] < 125.0 || out[1][1] > -125.0
+				if out[1][1] < double((MAX_X/2)) && out[1][1] > double(-1 * (MAX_X/2)) then 		#out[1][1] < 125.0 || out[1][1] > -125.0
 					# Both other vertices will be in lower half
 					# X points of v2 & v3 will be eqidistant from v1:x1
-					flip = double(random(min_x/2, max_x/2));
-					out[2][1] = flip+out[1][1];
-					out[2][2] = -1.0*out[1][2];
-					out[3][1] = out[1][1]-flip;
-					out[3][2] = -1.0*out[1][2];
+					flip = double(random(MIN_X / 2, MAX_X / 2));
+					out[2][1] = flip + out[1][1];
+					out[2][2] = -1.0 * out[1][2];
+					out[3][1] = out[1][1] - flip;
+					out[3][2] = -1.0 * out[1][2];
 				# Otherwise we have a down-pointing triangle and vertex 2 is mirror of v1
 				else
-					out[2][1] = -1.0*out[1][1];
+					out[2][1] = -1.0 * out[1][1];
 					out[2][2] = out[1][2];
 					out[3][1] = 0.0;
-					out[3][2] = -1.0*out[1][2];
+					out[3][2] = -1.0 * out[1][2];
 				end;
 			# Make a triangle with a vertical base and left or right pointing apex.
 			else #if vts == 2 then
-				out[1][1] = double(random(-1*max_x, -1*min_x)); 	#random(-250, -85)
-				out[1][2] = double(random(-1*max_y, max_y));		#random(-250, 250)
+				out[1][1] = double(random(-1 * MAX_X, -1 * MIN_X)); 	#random(-250, -85)
+				out[1][2] = double(random(-1 * MAX_Y, MAX_Y));		#random(-250, 250)
 				# If point 1 has landed in the (horizontally) central region, we have an left-pointing triangle.
-				if out[1][2] < double((max_y/2)) && out[1][2] > double(-1*(max_y/2)) then
+				if out[1][2] < double((MAX_Y / 2)) && out[1][2] > double(-1 * (MAX_Y / 2)) then
 					# Both other vertices will be in right half
 					# Y points of v2 & v3 will be eqidistant from v1:y1
-					flip = double(random(min_y/2, max_y/2));
-					out[2][1] = -1.0*out[1][1];
-					out[2][2] = flip+out[1][2];
-					out[3][1] = -1.0*out[1][1];
-					out[3][2] = out[1][2]-flip;
+					flip = double(random(MIN_Y / 2, MAX_Y / 2));
+					out[2][1] = -1.0 * out[1][1];
+					out[2][2] = flip + out[1][2];
+					out[3][1] = -1.0 * out[1][1];
+					out[3][2] = out[1][2] - flip;
 				# Otherwise we have a right-pointing triangle and vertex 2 is mirror of v1
 				else
 					out[2][1] = out[1][1];
-					out[2][2] = -1.0*out[1][2];
-					out[3][1] = -1.0*out[1][1];
+					out[2][2] = -1.0 * out[1][2];
+					out[3][1] = -1.0 * out[1][1];
 					out[3][2] = 0.0;
 				end;
 			end;
@@ -611,58 +623,58 @@ begin
 	else #if regPoly is false
 
 		if vts == 4 then
-			out[1][1] = double(-1*random(max_x, min_x));		 # -250, -85
-			out[1][2] = double(random(min_y, max_y)); 			#double(random(250, 85)); -> should've been (85, 250)
-			out[2][1] = double(random(min_x, max_x));				#double(random(85, 250));
-			out[2][2] = double(random(min_y, max_y));				#double(random(85, 250));
-			out[3][1] = double(random(min_x, max_x));				#double(random(85, 250));
-			out[3][2] = double(-1*random(min_y, max_y));			#double(random(-85, -250));
-			out[4][1] = double(-1*random(min_x, max_x));			#double(random(-85, -250));
-			out[4][2] = double(-1*random(min_y, max_y));			#double(random(-85, -250));
+			out[1][1] = double(-1*random(MAX_X, MIN_X));		 # -250, -85
+			out[1][2] = double(random(MIN_Y, MAX_Y)); 			#double(random(250, 85)); -> should've been (85, 250)
+			out[2][1] = double(random(MIN_X, MAX_X));				#double(random(85, 250));
+			out[2][2] = double(random(MIN_Y, MAX_Y));				#double(random(85, 250));
+			out[3][1] = double(random(MIN_X, MAX_X));				#double(random(85, 250));
+			out[3][2] = double(-1*random(MIN_Y, MAX_Y));			#double(random(-85, -250));
+			out[4][1] = double(-1*random(MIN_X, MAX_X));			#double(random(-85, -250));
+			out[4][2] = double(-1*random(MIN_Y, MAX_Y));			#double(random(-85, -250));
 		else
 			vts = random(1, 2);
 			# Make a triangle with an up or down-pointing apex.
 			if vts == 1 then
-				out[1][1] = double(random(-1*max_x, min_x)); 		#(random(-250, 85));
-				out[1][2] = double(random(min_y, max_y));				#(random(250, 85));
+				out[1][1] = double(random(-1 * MAX_X, MIN_X)); 		#(random(-250, 85));
+				out[1][2] = double(random(MIN_Y, MAX_Y));				#(random(250, 85));
 				# If vertex 1 has landed in the top left quadrant, we have a down-pointing triangle.
-				if out[1][1] < double(-1*min_x) then
+				if out[1][1] < double(-1 * MIN_X) then
 					# Next vertex will be in top right quadrant
-					out[2][1] = double(random(min_x, max_x));			#(random(85, 250));
-					out[2][2] = double(random(min_y, max_y));			#(random(85, 250));
+					out[2][1] = double(random(MIN_X, MAX_X));			#(random(85, 250));
+					out[2][2] = double(random(MIN_Y, MAX_Y));			#(random(85, 250));
 					# Last vertex somewhere in the centre of the bottom half
-					out[3][1] = double(random(-1*(max_x/2), max_x/2));			#(-125, 125));
-					out[3][2] = double(-1*random(min_y, max_y));				#(-85, -250));
+					out[3][1] = double(random(-1 * (MAX_X / 2), MAX_X / 2));			#(-125, 125));
+					out[3][2] = double(-1 * random(MIN_Y, MAX_Y));				#(-85, -250));
 				# Otherwise vertex 1 is centrally located, we have an up-pointing triangle.
 				else
 					# Next vertex will be in bottom right quadrant
-					out[2][1] = double(random(min_x, max_x));
-					out[2][2] = double(-1*random(min_y, max_y));
+					out[2][1] = double(random(MIN_X, MAX_X));
+					out[2][2] = double(-1 * random(MIN_Y, MAX_Y));
 					# Last vertex somewhere in bottom left quadrant
-					out[3][1] = double(-1*random(min_x, max_x));
-					out[3][2] = double(-1*random(min_y, max_y));
+					out[3][1] = double(-1 * random(MIN_X, MAX_X));
+					out[3][2] = double(-1 * random(MIN_Y, MAX_Y));
 				end;
 			# Make a left or right pointing triangle.
 			else #if vts == 2 then
-				# Put the first point somewhere in the left half, from below y axis to max_y
-				out[1][1] = double(random(-1*max_x, -1*min_x)); 	#(random(-250, -85));
-				out[1][2] = double(random(-1*min_y, max_y));			#(random(250, -85));
+				# Put the first point somewhere in the left half, from below y axis to MAX_Y
+				out[1][1] = double(random(-1 * MAX_X, -1 * MIN_X)); 	#(random(-250, -85));
+				out[1][2] = double(random(-1 * MIN_Y, MAX_Y));			#(random(250, -85));
 				# If vertex 1 has landed in the top left quadrant, we have a right-pointing triangle.
-				if out[1][2] > double(min_y) then
+				if out[1][2] > double(MIN_Y) then
 					# Next vertex will be in bottom left quadrant
-					out[2][1] = double(-1*random(min_x, max_x));
-					out[2][2] = double(-1*random(min_y, max_y));
+					out[2][1] = double(-1 * random(MIN_X, MAX_X));
+					out[2][2] = double(-1 * random(MIN_Y, MAX_Y));
 					# Last vertex somewhere in the centre of the right half
-					out[3][1] = double(random(min_x, max_x));
-					out[3][2] = double(random(-1*(max_y/2), max_y/2));
+					out[3][1] = double(random(MIN_X, MAX_X));
+					out[3][2] = double(random(-1 * (MAX_Y / 2), MAX_Y / 2));
 				# Otherwise vertex 1 is centrally located in y, we have a left-pointing triangle.
 				else
 					# Next vertex will be in top right quadrant
-					out[2][1] = double(random(min_x, max_x));
-					out[2][2] = double(random(min_y, max_y));
+					out[2][1] = double(random(MIN_X, MAX_X));
+					out[2][2] = double(random(MIN_Y, MAX_Y));
 					# Last vertex somewhere in bottom right quadrant
-					out[3][1] = double(random(min_x, max_x));
-					out[3][2] = double(-1*random(min_y, max_y));
+					out[3][1] = double(random(MIN_X, MAX_X));
+					out[3][2] = double(-1 * random(MIN_Y, MAX_Y));
 				end;
 			end;
 		end;
@@ -689,8 +701,8 @@ begin
 	until
 		r > size
 	begin
-		rnd[r] = random()*max + min;
-		r = r+1;
+		rnd[r] = random() * max + min;
+		r = r + 1;
 	end;
 
 	return rnd;
@@ -774,12 +786,12 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					# fix the rotations at zero to draw a shape
 					rnd = randR( vtx, 0.0, 0.0 );
 					#show subjective shape primer
-					nonshape(CS, dmtr, true, pacmantype, rnd );
+					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(151 + blockN) + ";Congruent;shape;primer;" + string(vtx) );	ev.set_port_code( 151+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
 				#SHAPE TARGET
-					polyfilla(CS, dmtr, false, pacmantype);
+					polyfilla(CS, PAC_DIAM, false, pacmantype);
 					ev.set_event_code( log_coors  + ";" + string(152 + blockN) + ";Congruent;shape;target;" + string(vtx)  );	ev.set_port_code( 152+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
@@ -787,12 +799,12 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 				#NONSHAPE PRIMER
 					rnd = randR( vtx, min, mux );
 					# show nonshape primer
-					nonshape(CS, dmtr, true, pacmantype, rnd );
+					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(153 + blockN) + ";InCon;nonShape;primer;" + string(vtx)  );	ev.set_port_code( 153+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
 				#SHAPE TARGET
-					polyfilla(CS, dmtr, false, pacmantype);
+					polyfilla(CS, PAC_DIAM, false, pacmantype);
 					ev.set_event_code( log_coors  + ";" + string(154 + blockN) + ";InCon;shape;target;" + string(vtx) );	ev.set_port_code( 154+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
@@ -803,12 +815,12 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 				rnd = randR( vtx, min, mux );
 				#NONSHAPE PRIMER
 					# show nonshape primer
-					nonshape(CS, dmtr, true, pacmantype, rnd);
+					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd);
 					ev.set_event_code( log_coors  + ";" + string(155 + blockN) + ";Congruent;nonShape;primer;" + string(vtx) );	ev.set_port_code( 155+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
 				#NONSHAPE TARGET
-					nonshape(CS, dmtr, false, pacmantype, rnd);
+					kanizsaShape(CS, PAC_DIAM, false, pacmantype, rnd);
 					ev.set_event_code( log_coors  + ";" + string(156 + blockN) + ";Congruent;nonShape;target;" + string(vtx) );	ev.set_port_code( 156+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
@@ -817,7 +829,7 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					# fix the rotations at zero to draw a shape
 					rnd = randR( vtx, 0.0, 0.0 );
 					# show subjective shape primer
-					nonshape(CS, dmtr, true, pacmantype, rnd );
+					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(157 + blockN) + ";InCon;shape;primer;" + string(vtx) );	ev.set_port_code( 157+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
@@ -825,7 +837,7 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					# randomize the rotations
 					rnd = randR( vtx, min, mux );
 					# show nonshape primer
-					nonshape(CS, dmtr, false, pacmantype, rnd );
+					kanizsaShape(CS, PAC_DIAM, false, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(158 + blockN) + ";InCon;nonShape;target;" + string(vtx)  );	ev.set_port_code( 158+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;

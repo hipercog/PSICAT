@@ -7,13 +7,13 @@ Modded :	28-06-2012
 
 scenario = "PSICATpractice";
 
-write_codes=true; # Write all codes to parallel port (for EEG acquisition)
-pulse_width=16; # Seems to work fine
+write_codes = true; # Write all codes to parallel port (for EEG acquisition)
+pulse_width = 16; # Seems to work fine
 default_font_size = 20;
 default_font = "Verdana";
 active_buttons = 2;
 button_codes = 190, 199;	# Response pad buttons (for 2 target classes);
-response_port_output=true;
+response_port_output = true;
 
 # foreground and background colors need to be defined in both SDL (as below) and
 # in PCL (at the beginning of pcl sequence)
