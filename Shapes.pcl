@@ -1,0 +1,306 @@
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine to generate a Kanizsa stimuli with randomly oriented Pacmen.
+# Routine is deterministic, i.e. all randomness is generated outside and passed
+# in so results can be replicated.
+#
+#	coors : DOUBLE ARRAY, coordinates of the polygon.
+#	dims : DOUBLE, diameter of Pac-Man shapes
+#	prime : BOOLEAN, true -> primer (lines), false -> target (Pac-Man shapes)
+#	pacmantype : STRING, defines Pac-Man shapes as "annulus" or "ellipse"
+#	rts : DOUBLE ARRAY, degrees of rotation, useful to make two identically
+#                     randomised nonshapes - primer and Kanizsa
+#
+sub
+	kanizsaShape( array< double,2 >& coors, double dims, bool prime, string pacmantype, array< double,1 >& rts )
+begin
+	pyc.clear();
+	lyne.clear();
+
+	# Coordinate count
+	int cnt = coors.count();
+
+	# Get midpoints so we can draw triangles into the Pacmen.
+	array< double > mids[cnt][2];
+	# Get points between mid and coors to draw smaller triangles into Pac-Man.
+	array< double > thrd[cnt][2];
+	# Get points between mid and coors+1 to draw triangles into Pacmen.
+	array< double > twth[cnt][2];
+
+	double xt;
+	double yt;
+	loop
+		int i = 1;
+	until
+		i > cnt
+	begin
+		mids[i][1] = (coors[i][1] + coors[i % cnt + 1][1]) / 2.0;
+    mids[i][2] = (coors[i][2] + coors[i % cnt + 1][2]) / 2.0;
+
+		if prime == true then
+			# Choose longer lines to display salience better
+			thrd[i][1] = (coors[i][1] * 2.0 + coors[i % cnt + 1][1]) / 3.0;
+      thrd[i][2] = (coors[i][2] * 2.0 + coors[i % cnt + 1][2]) / 3.0;
+			twth[i][1] = (coors[i][1] + coors[i % cnt + 1][1] * 2.0) / 3.0;
+      twth[i][2] = (coors[i][2] + coors[i % cnt + 1][2] * 2.0) / 3.0;
+		else
+			# Choose shorter lines to prevent covering other Pacmen inadvertently
+			# We select nearest valid point to coors.i x, y
+			xt = mids[i][1];
+			yt = mids[i][2];
+			loop
+				double dist = euc(coors[i][1], coors[i][2], xt, yt);
+			until
+				dist < dims + 20.0
+			begin
+				# update xt, yt
+				#xt = midpoint of coors x, xt
+				xt = (coors[i][1] + xt)/2.0;
+				#yt = midpoint of coors y, yt
+				yt = (coors[i][2] + yt)/2.0;
+				dist = euc(coors[i][1], coors[i][2], xt, yt);
+			end;
+			thrd[i][1] = xt;	thrd[i][2] = yt;
+
+			# Get nearest valid point to coors.i+1 x,y (mod i by vertex count to wrap)
+			xt = mids[i][1];
+			yt = mids[i][2];
+			loop
+				double dist = euc(coors[i % cnt + 1][1], coors[i % cnt + 1][2], xt, yt);
+			until
+				dist < dims + 20.0
+			begin
+				# update xt, yt
+				#xt = midpoint of coors x, xt
+				xt = (coors[i % cnt + 1][1] + xt) / 2.0;
+				#yt = midpoint of coors y, yt
+				yt = (coors[i % cnt + 1][2] + yt) / 2.0;
+				dist = euc(coors[i % cnt + 1][1], coors[i % cnt + 1][2], xt, yt);
+			end;
+			twth[i][1] = xt;	twth[i][2] = yt;
+		end;
+		i = i + 1;
+	end;
+
+	# Create triangle array
+	array< double > tri[3][2];
+#	triFill( coors[x]...diameter, array<> mid1, array<> mid3, array<> qrtr, array<> thrd, array<> thqt, array<> twth )
+
+	# Adjust behaviour for primer or Kanizsa
+	if prime == false then
+		# Set the requisite Kanizsa shape properties
+		lyne.set_line_color( BKGD_COLOR );
+		lyne.set_next_fill_color( BKGD_COLOR );
+
+		# Initialise triangle vertices to fill the first Pacman
+		tri = triFill( coors[1], dims, mids[cnt], mids[1], thrd[1], twth[cnt] );
+#		tri[1] = thrd[cnt];		tri[2] = coors[1];		tri[3] = twth[1];
+
+		# Rotate the triangle first
+		tri = rotateMat(tri, 2, rts[1]);
+		# Add the triangle polygon
+		lyne.add_polygon( tri, true, 1.0, 0.0 );
+		# Check the triangle has filled the Pacman
+		correctTri(tri, dims);
+
+		# Do likewise for all other Pacmen
+		loop
+			int k = 2;
+		until
+			k > cnt
+		begin
+			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
+#			tri[1] = thrd[k-1];		tri[2] = coors[k];		tri[3] = twth[k];
+			tri = rotateMat(tri, 2, rts[k]);
+			lyne.add_polygon( tri, true, 1.0, 0.0 );
+			correctTri(tri, dims);
+			k = k + 1;
+		end;
+
+		# Pick a Pacman type - Ellipse, Annullus or wrong.
+		if pacmantype == "ellipse" then
+			pacman_e.set_dimensions( dims, dims );
+			pacman_e.set_color( FOREGD_CLR );
+			loop
+				int i = 1;
+			until
+				i > cnt
+			begin
+				pyc.add_part(pacman_e, coors[i][1], coors[i][2]);
+				i = i + 1;
+			end;
+			pacman_e.redraw();
+		elseif pacmantype == "annulus" then
+			double dims1_in = (dims / 2.0) * 0.75;
+			double dims1_out = dims / 2.0;
+			double dims2_in = dims * 0.75;
+			double dims2_out = dims;
+			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
+			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
+			loop
+				int i = 1;
+			until
+				i > cnt
+			begin
+				pyc.add_part(annulus1, coors[i][1], coors[i][2]);
+				pyc.add_part(annulus2, coors[i][1], coors[i][2]);
+				annulus1.redraw();
+				annulus2.redraw();
+				i = i + 1;
+			end;
+		else
+			return; # NO VALID PACMAN GIVEN...???
+		end;
+
+	#### If prime is true, just draw the outline shape ####
+# TODO - REPLACE DUPLICATE CODE WITH SUBROUTINE?
+	else
+		# Set the requisite primer colours
+		lyne.set_line_color( TRNSPRNCY ); # TRNSPRNCY for red, FOREGD_CLR for white
+		lyne.set_next_fill_color( BKGD_COLOR );
+
+		# Initialise triangle vertices to fill the first Pacman
+		tri = triFill( coors[1], dims, mids[cnt], mids[1], thrd[1], twth[cnt] );
+#		tri[1] = thrd[cnt];		tri[2] = coors[1];		tri[3] = twth[1];
+
+		# Rotate the triangle first
+		tri = rotateMat(tri, 2, rts[1]);
+		# Then add the two required lines. No need to check for Pacman fill here!
+		lyne.add_line( tri[1][1], tri[1][2], tri[2][1], tri[2][2] );
+		lyne.line_to( tri[3][1], tri[3][2] );
+
+		# Now do likewise for all remaining Pacmen
+		loop
+			int k = 2;
+		until
+			k > cnt
+		begin
+			tri = triFill(coors[k], dims, mids[k - 1], mids[k], thrd[k], twth[k - 1]);
+#			tri[1] = thrd[k-1];		tri[2] = coors[k];		tri[3] = twth[k];
+			tri = rotateMat(tri, 2, rts[k]);
+			lyne.add_line( tri[1][1], tri[1][2], tri[2][1], tri[2][2] );
+			lyne.line_to( tri[3][1], tri[3][2] );
+			k = k + 1;
+		end;
+/**
+	USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
+*/
+		# Pick a Pacman type - Ellipse, Annullus or wrong.
+		if pacmantype == "ellipse" then
+			pacman_e.set_dimensions( dims, dims );
+			pacman_e.set_color( FOREGD_CLR );
+			loop
+				int i = 1;
+			until
+				i > cnt
+			begin
+				pyc.add_part(pacman_e, coors[i][1], coors[i][2]);
+				i = i + 1;
+			end;
+			pacman_e.redraw();
+		elseif pacmantype == "annulus" then
+			double dims1_in = (dims / 2.0) * 0.75;
+			double dims1_out = dims / 2.0;
+			double dims2_in = dims * 0.75;
+			double dims2_out = dims;
+			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
+			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
+			loop
+				int i = 1;
+			until
+				i > cnt
+			begin
+				pyc.add_part(annulus1, coors[i][1], coors[i][2]);
+				pyc.add_part(annulus2, coors[i][1], coors[i][2]);
+				annulus1.redraw();
+				annulus2.redraw();
+				i = i + 1;
+			end;
+		else
+			return; # NO VALID PACMAN GIVEN...?
+		end;
+/**/
+	end;
+
+	lyne.redraw();
+	pyc.add_part( lyne, 0, 0 );
+
+end;
+
+
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine creates a polygon specified by the coordinates in parameter 1.
+#
+#	coors : DOUBLE ARRAY, coordinates of the polygon.
+#	dims : DOUBLE, diameter of Pac-Man shapes
+#	prime : boolean, true -> primer (lines), false -> target (Pac-Man shapes)
+#	pacmantype : string, defines Pac-Man shapes as "annulus" or "ellipse"
+#
+sub
+	polyfilla( array< double,2 >& coors, double dims, bool prime, string pacmantype )
+begin
+	pyc.clear();
+	lyne.clear();
+	# Fix the lyne properties
+	lyne.add_line( coors[1][1], coors[1][2], coors[2][1], coors[2][2] );
+	lyne.set_next_join_type( join_circle );
+	loop
+		int i = 3;
+		int j = 1;
+	until
+		i > coors.count()
+	begin
+		lyne.line_to( coors[i][j], coors[i][j+1] );
+		i = i + 1;
+	end;
+	lyne.line_to( coors[1][1], coors[1][2]);
+	if prime == false then
+		# Pick a pacman
+		if pacmantype == "ellipse" then
+			pacman_e.set_dimensions( dims, dims );
+			pacman_e.set_color( FOREGD_CLR );
+			pacman_e.redraw();
+			loop
+				int i = 1;
+				int j = 1;
+			until
+				i > coors.count()
+			begin
+				pyc.add_part(pacman_e, coors[i][j], coors[i][j+1]);
+				i = i + 1;
+			end;
+		end;
+		if pacmantype == "annulus" then
+			double dims1_in = (dims/2.0)*0.75;
+			double dims1_out = dims/2.0 ;
+			double dims2_in = dims *0.75 ;
+			double dims2_out = dims ;
+			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
+			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);
+			loop
+				int i = 1;
+				int j = 1;
+			until
+				i > coors.count()
+			begin
+				pyc.add_part(annulus1, coors[i][j], coors[i][j+1]);
+				pyc.add_part(annulus2, coors[i][j], coors[i][j+1]);
+				annulus1.redraw();
+				annulus2.redraw();
+				i = i + 1;
+			end;
+		end;
+		# Set the lyne properties
+		lyne.set_line_color( BKGD_COLOR );
+		lyne.set_next_fill_color( BKGD_COLOR );
+	# If prime is true, just draw the outline shape
+	else
+		lyne.set_line_color( FOREGD_CLR );
+		lyne.set_next_fill_color( BKGD_COLOR );
+	end;
+	lyne.close(true);
+	lyne.redraw();
+	pyc.add_part( lyne, 0, 0 );
+end;

@@ -3,15 +3,19 @@
 # ------------------------------------------------------------------------------
 
 # MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
+
+# COLOR GLOBALS
 rgb_color BKGD_COLOR = rgb_color(0, 0, 0, 0); ##0,0,0,0
 rgb_color FOREGD_CLR = rgb_color(255, 255, 255, 0);
 rgb_color TRNSPRNCY = rgb_color(255, 0, 0, 0);
 
+# TIMING GLOBALS
 int KNZA_DUR = forever;
 int INTF_DUR = 150;
 int SOA_LOWER_DUR = 400;
 int SOA_UPPER_DUR = 600;
 
+# VISUAL DIMENSIONS GLOBALS
 # display_device.width seems to return an int (which is not what the documentation suggests)
 int screen_width = display_device.width();
 int screen_height = display_device.height();
@@ -726,7 +730,7 @@ begin
 	# Control the number of vertices
 	int vtx = random(3, 4);
 	# COORDINATE ARRAY
-	array <double> CS[vtx][2];
+	array <double> rd_cs[vtx][2];
 	# Random rotation angles array
 	array< double > rnd[vtx];
 	# Rotation angles constraints, min, mux (= max - min)
@@ -749,11 +753,11 @@ Comment out for a fixed vertex count (triangles or quandrangles) FOR THIS BLOCK
 Get random num vertices for primer/Kanizsa, then resize arrays to current size
 */
 		vtx = random(3, 4);
-		CS.resize( vtx );
+		rd_cs.resize( vtx );
 		rnd.resize( vtx );
 /**/
 		# first randomize the coordinates for both stimuli
-		CS = randCS( regPoly, vtx );
+		rd_cs = randCS( regPoly, vtx, MIN_X, MIN_Y, MAX_X, MAX_Y );
 
 	   # save coordinates in a string "log_coors" for the log file
 		string log_coors = "  [";
@@ -762,8 +766,8 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 		until
 			k == vtx + 1
 		begin
-			log_coors = log_coors + " " + string(CS[k][1]) + ",";
-			log_coors = log_coors + " " + string(CS[k][2]) + ",";
+			log_coors = log_coors + " " + string(rd_cs[k][1]) + ",";
+			log_coors = log_coors + " " + string(rd_cs[k][2]) + ",";
 			k = k + 1;
 		end;
 		log_coors = log_coors + ",";
@@ -786,12 +790,12 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					# fix the rotations at zero to draw a shape
 					rnd = randR( vtx, 0.0, 0.0 );
 					#show subjective shape primer
-					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd );
+					kanizsaShape(rd_cs, PAC_DIAM, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(151 + blockN) + ";Congruent;shape;primer;" + string(vtx) );	ev.set_port_code( 151+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
 				#SHAPE TARGET
-					polyfilla(CS, PAC_DIAM, false, pacmantype);
+					polyfilla(rd_cs, PAC_DIAM, false, pacmantype);
 					ev.set_event_code( log_coors  + ";" + string(152 + blockN) + ";Congruent;shape;target;" + string(vtx)  );	ev.set_port_code( 152+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
@@ -799,12 +803,12 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 				#NONSHAPE PRIMER
 					rnd = randR( vtx, min, mux );
 					# show nonshape primer
-					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd );
+					kanizsaShape(rd_cs, PAC_DIAM, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(153 + blockN) + ";InCon;nonShape;primer;" + string(vtx)  );	ev.set_port_code( 153+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
 				#SHAPE TARGET
-					polyfilla(CS, PAC_DIAM, false, pacmantype);
+					polyfilla(rd_cs, PAC_DIAM, false, pacmantype);
 					ev.set_event_code( log_coors  + ";" + string(154 + blockN) + ";InCon;shape;target;" + string(vtx) );	ev.set_port_code( 154+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
@@ -815,12 +819,12 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 				rnd = randR( vtx, min, mux );
 				#NONSHAPE PRIMER
 					# show nonshape primer
-					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd);
+					kanizsaShape(rd_cs, PAC_DIAM, true, pacmantype, rnd);
 					ev.set_event_code( log_coors  + ";" + string(155 + blockN) + ";Congruent;nonShape;primer;" + string(vtx) );	ev.set_port_code( 155+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
 				#NONSHAPE TARGET
-					kanizsaShape(CS, PAC_DIAM, false, pacmantype, rnd);
+					kanizsaShape(rd_cs, PAC_DIAM, false, pacmantype, rnd);
 					ev.set_event_code( log_coors  + ";" + string(156 + blockN) + ";Congruent;nonShape;target;" + string(vtx) );	ev.set_port_code( 156+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;
@@ -829,7 +833,7 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					# fix the rotations at zero to draw a shape
 					rnd = randR( vtx, 0.0, 0.0 );
 					# show subjective shape primer
-					kanizsaShape(CS, PAC_DIAM, true, pacmantype, rnd );
+					kanizsaShape(rd_cs, PAC_DIAM, true, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(157 + blockN) + ";InCon;shape;primer;" + string(vtx) );	ev.set_port_code( 157+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
 					Kanizsa.set_duration( INTF_DUR );	Kanizsa.set_type( fixed );	Kanizsa.present();
 
@@ -837,7 +841,7 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					# randomize the rotations
 					rnd = randR( vtx, min, mux );
 					# show nonshape primer
-					kanizsaShape(CS, PAC_DIAM, false, pacmantype, rnd );
+					kanizsaShape(rd_cs, PAC_DIAM, false, pacmantype, rnd );
 					ev.set_event_code( log_coors  + ";" + string(158 + blockN) + ";InCon;nonShape;target;" + string(vtx)  );	ev.set_port_code( 158+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );	Kanizsa.set_type( first_response );	Kanizsa.present();
 			end;

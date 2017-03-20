@@ -1,0 +1,170 @@
+#######-------#######-------#######-------#######-------#######-------#######---
+# Subroutine that returns an [i][2] array of randomized coordinates
+#
+#	regPoly : BOOLEAN, true = create regular shape, false = create irregular shape
+# vts : number of vertices in the shape
+# min_x : INTEGER, lowest acceptable x-coordinate absolute value for quadrangle
+# min_y : INTEGER, lowest acceptable y-coordinate absolute value for quadrangle
+# max_x : INTEGER, highest acceptable x-coordinate absolute value for quadrangle
+# max_y : INTEGER, highest acceptable y-coordinate absolute value for quadrangle
+#
+sub
+   array< double,2 > randCS( bool regPoly, int vts, int min_x, int min_y, int max_x, int max_y )
+begin
+	# Return value
+	array< double > out[vts][2];
+
+	# Randomly generate the coordinates within certain constrained screen areas.
+	# If REGULAR polygon:
+	if regPoly == true then
+
+		if vts == 4 then
+			out[1][1] = double(random(-1 * max_x, -1 * min_x));
+			out[1][2] = double(random(min_y, max_y));
+			#save the constant values
+			double constant_x = out[1][1];
+			double constant_y = out[1][2];
+			#assign the rest of the coordinate values
+			out[2][1] = -1.0 * constant_x;
+			out[2][2] = constant_y;
+			out[3][1] = -1.0 * constant_x;
+			out[3][2] = -1.0 * constant_y;
+			out[4][1] = constant_x;
+			out[4][2] = -1.0 * constant_y;
+		else
+			vts = random(1, 2);
+			double flip = 0.0;
+			# Make a triangle with a horizontal base and up or down-pointing apex.
+			if vts == 1 then
+				out[1][1] = double(random(-1 * max_x, max_x));
+				out[1][2] = double(random(min_y, max_y));
+				# If point 1 is in (vertically) central region -> up-pointing triangle.
+				# Note exclusion zone is roughly 50% of probability space
+				if out[1][1] < double((max_x/2)) && out[1][1] > double(-1 * (max_x/2)) then
+					# Both other vertices will be in lower half
+					# X points of v2 & v3 will be eqidistant from v1:x1
+					flip = double(random(min_x / 2, max_x / 2));
+					out[2][1] = flip + out[1][1];
+					out[2][2] = -1.0 * out[1][2];
+					out[3][1] = out[1][1] - flip;
+					out[3][2] = -1.0 * out[1][2];
+				# Otherwise -> a down-pointing triangle and vertex 2 is mirror of v1
+				else
+					out[2][1] = -1.0 * out[1][1];
+					out[2][2] = out[1][2];
+					out[3][1] = 0.0;
+					out[3][2] = -1.0 * out[1][2];
+				end;
+			# Make a triangle with a vertical base and left or right pointing apex.
+			else #if vts == 2 then
+				out[1][1] = double(random(-1 * max_x, -1 * min_x));
+				out[1][2] = double(random(-1 * max_y, max_y));
+				# If point 1 in (horizontally) central region -> left-pointing triangle.
+				if out[1][2] < double((max_y / 2)) && out[1][2] > double(-1 * (max_y / 2)) then
+					# Both other vertices will be in right half
+					# Y points of v2 & v3 will be eqidistant from v1:y1
+					flip = double(random(min_y / 2, max_y / 2));
+					out[2][1] = -1.0 * out[1][1];
+					out[2][2] = flip + out[1][2];
+					out[3][1] = -1.0 * out[1][1];
+					out[3][2] = out[1][2] - flip;
+				# Otherwise -> right-pointing triangle and vertex 2 is mirror of v1
+				else
+					out[2][1] = out[1][1];
+					out[2][2] = -1.0 * out[1][2];
+					out[3][1] = -1.0 * out[1][1];
+					out[3][2] = 0.0;
+				end;
+			end;
+		end;
+	# if IRREGULAR polygon
+	else #if regPoly is false
+
+		if vts == 4 then
+			out[1][1] = double(-1*random(max_x, min_x));
+			out[1][2] = double(random(min_y, max_y));
+			out[2][1] = double(random(min_x, max_x));
+			out[2][2] = double(random(min_y, max_y));
+			out[3][1] = double(random(min_x, max_x));
+			out[3][2] = double(-1*random(min_y, max_y));
+			out[4][1] = double(-1*random(min_x, max_x));
+			out[4][2] = double(-1*random(min_y, max_y));
+		else
+			vts = random(1, 2);
+			# Make a triangle with an up or down-pointing apex.
+			if vts == 1 then
+				out[1][1] = double(random(-1 * max_x, min_x));
+				out[1][2] = double(random(min_y, max_y));
+				# If vertex 1 is in top left quadrant -> a down-pointing triangle.
+				if out[1][1] < double(-1 * min_x) then
+					# Next vertex will be in top right quadrant
+					out[2][1] = double(random(min_x, max_x));
+					out[2][2] = double(random(min_y, max_y));
+					# Last vertex somewhere in the centre of the bottom half
+					out[3][1] = double(random(-1 * (max_x / 2), max_x / 2));
+					out[3][2] = double(-1 * random(min_y, max_y));
+				# Otherwise -> vertex 1 is centrally located -> an up-pointing triangle.
+				else
+					# Next vertex will be in bottom right quadrant
+					out[2][1] = double(random(min_x, max_x));
+					out[2][2] = double(-1 * random(min_y, max_y));
+					# Last vertex somewhere in bottom left quadrant
+					out[3][1] = double(-1 * random(min_x, max_x));
+					out[3][2] = double(-1 * random(min_y, max_y));
+				end;
+			# Make a left or right pointing triangle.
+			else #if vts == 2 then
+				# Put point 1 somewhere in the left half, from below y axis to max_y
+				out[1][1] = double(random(-1 * max_x, -1 * min_x));
+				out[1][2] = double(random(-1 * min_y, max_y));
+				# If vertex 1 is in top left quadrant -> a right-pointing triangle.
+				if out[1][2] > double(min_y) then
+					# Next vertex will be in bottom left quadrant
+					out[2][1] = double(-1 * random(min_x, max_x));
+					out[2][2] = double(-1 * random(min_y, max_y));
+					# Last vertex somewhere in the centre of the right half
+					out[3][1] = double(random(min_x, max_x));
+					out[3][2] = double(random(-1 * (max_y / 2), max_y / 2));
+				# Otherwise vertex 1 is centrally located in y -> left-pointing triangle
+				else
+					# Next vertex will be in top right quadrant
+					out[2][1] = double(random(min_x, max_x));
+					out[2][2] = double(random(min_y, max_y));
+					# Last vertex somewhere in bottom right quadrant
+					out[3][1] = double(random(min_x, max_x));
+					out[3][2] = double(-1 * random(min_y, max_y));
+				end;
+			end;
+		end;
+	end;
+
+	return out;
+end;
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine generates randomized rotation angles for non shape Kanizsas.
+# If both min & max = 0, output passed to nonshapes() will generate a shape.
+#	If min > 0 and max = 0, angles returned will be constant, i.e. equal to min
+#
+#	size : INTEGER, number of elements in the array
+#	min : DOUBLE, the offset or lowest rotation angle we can generate
+#	max : DOUBLE, the largest angle - remember that actual upper bound = max + min
+#               so if min > 0, subtract min from desired upper bound to get max.
+#
+sub
+	array< double,1 > randR( int size, double min, double max )
+begin
+	# Resize rotation angles array to current size
+	array <double> rnd[size];
+	loop
+		int r = 1;
+	until
+		r > size
+	begin
+		rnd[r] = random() * max + min;
+		r = r + 1;
+	end;
+
+	return rnd;
+end;

@@ -1,0 +1,212 @@
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine to rotate a matrix about one of its own vertices
+#	Returns the rotated matrix.
+#
+#	vcm : DOUBLE ARRAY, vertex coordinate matrix
+#	vtx	: INTEGER, vertex to rotate about
+#	rot : DOUBLE, rotation angle
+#
+sub
+	array< double,2 > rotateMat( array< double,2 >& vcm, int vtx, double rot )
+begin
+	# Coordinate count
+	int cnt = vcm.count();
+	# Return value
+	array< double > out[cnt][2];
+	# Offset of focal vertex from origin
+	double tranX = 0.0 - vcm[vtx][1];
+	double tranY = 0.0 - vcm[vtx][2];
+	# Translate to global coordinate space origin
+	loop
+		int i = 1;
+	until
+		i > cnt
+	begin
+		vcm[i][1] = vcm[i][1] + tranX;
+		vcm[i][2] = vcm[i][2] + tranY;
+		i = i + 1;
+	end;
+	# ROTATE MATRIX
+	loop
+		int i = 1;
+	until
+		i > cnt
+	begin
+		out[i][1] = vcm[i][1] * cos(rot) - vcm[i][2] * sin(rot);	# x' of vertex i
+		out[i][2] = vcm[i][1] * sin(rot) + vcm[i][2] * cos(rot);	# y' of vertex i
+		i = i+1;
+	end;
+	# Perform reverse translation
+	loop
+		int i = 1;
+	until
+		i > cnt
+	begin
+		out[i][1] = out[i][1] - tranX;
+		out[i][2] = out[i][2] - tranY;
+		i = i + 1;
+	end;
+	return out;
+end;
+
+
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine checks that a triangle covers an ellipse to make a Pac-Man shape,
+# draws corrected rectangle necessary to correct.
+#	Returns true if triangle covers the ellipse - false if correction was needed.
+#
+#	c : DOUBLE ARRAY, coordinate matrix holds the triangle to be checked
+#	dims : DOUBLE, diameter of the Pacman - i.e. triangle height must be > dims/2
+#
+sub
+	bool correctTri( array< double,2 >& c, double dims )
+begin
+	# Return value
+	array< double > rect[4][2];
+	# Measure the height of the triangle. Coordinate 2 will be the apex.
+	# Area = http://www.mathopenref.com/coordtrianglearea.html
+	double area = abs((c[1][1] * (c[2][2] - c[3][2]) +
+							       c[2][1] * (c[3][2] - c[1][2]) +
+							       c[3][1] * (c[1][2] - c[2][2]) ) / 2.0);
+	# Euclidean distance between contra-apical vertices = triangle base length
+	double xdiffb = c[1][1] - c[3][1];
+	double ydiffb = c[1][2] - c[3][2];
+	double base = sqrt( (xdiffb * xdiffb) + (ydiffb * ydiffb) );
+	# Area = (height x base) / 2, thus apex-base-intersect line (abil) height is:
+	double height = (area * 2.0) / base;
+	# Check if this has covered the round shape to create a convincing Pacman
+	if height < dims / 2.0 then
+		# Extension length = Pacman radius minus existing triangle height
+		double h = dims / 2.0 - height;
+		# Init slope, orientation and offset variables.
+		double mh = 0.0;	# Set default for if base is horizontal
+		double mb = 0.0;
+		double fx = 0.0;	# Set default for if base is horizontal
+		double fy = 0.0;
+		double deltx = h;
+		double delty = h;
+	# these are defined here for debugging
+		double ax = 1.0;
+		double ay = 1.0;
+
+		######	MUST ORIENT NEW RECTANLGE CORRECTLY!	######
+		# If y diffs are 0 then base is horizontal (slope 0),
+    #  abil is vertical (slope undefined); otherwise:
+		if ydiffb != 0.0 then
+			# If x diffs are 0 then base is vertical (slope undefined),
+      #  abil is horizontal (slope 0); otherwise:
+			if xdiffb != 0.0 then
+				# Slope of base
+				mb = ydiffb / xdiffb;
+				# Slope of apex-base intersect
+				mh = -1.0 / mb;
+				# angle of the abil with respect to x-axis
+				double alpha = arctan( mh );
+				# Offset of the new x,y points (wrt to the base vertices)
+				deltx = abs(h * cos( alpha ));
+				delty = abs(h * sin( alpha ));
+
+				#	Apex-base intersection point - solve x,y from point-slope equations
+				ax = (mb * c[1][1] - mh * c[2][1] - c[1][2] + c[2][2]) / (mb - mh);
+				ay = (mh * ax - mh * c[2][1]) + c[2][2];
+				# Offset orientation of new x,y points with respect to apex point
+				if ax < c[2][1] then
+					fx = -1.0;
+				else
+					fx = 1.0;
+				end;
+				if ay < c[2][2] then
+					fy = -1.0;
+				else
+					fy = 1.0;
+				end;
+			else
+				# difference in x for apex and one base vertex
+				fx = (c[1][1] - c[2][1]) / abs(c[1][1] - c[2][1]);
+			end;
+		else
+			# difference in y for apex and one base vertex
+			fy = (c[1][2] - c[2][2]) / abs(c[1][2] - c[2][2]);
+		end;
+		# Orientation and offset in x and y
+		fx = deltx * fx;
+		fy = delty * fy;
+
+		# Extra points needed. If triangle base is vertical, y's are unchanged...
+    # If horizontal, x's unchanged.
+		double p4x = c[1][1] + fx;	double p4y = c[1][2] + fy;
+		double p3x = c[3][1] + fx;	double p3y = c[3][2] + fy;
+		# Finally populate new polygon to cover Pacman
+		rect[1][1] = c[1][1];	rect[1][2] = c[1][2];
+		rect[2][1] = c[3][1];	rect[2][2] = c[3][2];
+		rect[3][1] = p3x; 		rect[3][2] = p3y;
+		rect[4][1] = p4x; 		rect[4][2] = p4y;
+
+		# Draw the correction polygon
+		lyne.add_polygon( rect, true, 1.0, 0.0 );
+
+		# report that fill part not working, to prompt for new random coordinates.
+		return false;
+	end;
+	return true;
+end;
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine returns the Euclidean distance between two vertices
+#
+#	x1 : DOUBLE, vertex one's x value.
+#	y1 : DOUBLE, vertex one's y value.
+#	x2 : DOUBLE, vertex one's x value.
+#	y2 : DOUBLE, vertex one's y value.#
+#
+sub
+	double euc( double x1, double y1, double x2, double y2 )
+begin
+	double xdiff = x1 - x2;
+	double ydiff = y1 - y2;
+	double euc = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
+	return euc;
+end;
+
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine returns triangle fitted over an ellipse to get a Pac-Man shape
+#
+#	cs : DOUBLE ARRAY, coordinates of the original ellipse
+#	dm : DOUBLE, diameter of ellipse - triangles gotta be broader than this
+#	mid1 : DOUBLE ARRAY, midpoints of ellipse
+#	mid3 : DOUBLE ARRAY, midpoints of ellipse
+#	thrd : DOUBLE ARRAY, one-third points of ellipse
+#	twth : DOUBLE ARRAY, two-third points of ellipse
+#
+sub
+	array< double,2 > triFill( array< double,1 >& cs, double dm, array< double,1 >& mid1, array< double,1 >& mid3, array< double,1 >& thrd, array< double,1 >& twth )
+begin
+	# Return value - one triangle with the original coordinate at index 2 = apex.
+	array< double > out[3][2];
+	# The triangle apex
+	out[2][1] = cs[1];
+	out[2][2] = cs[2];
+	# Pick the first point - either last midpoint or last two-thirds point.
+	if euc( cs[1], cs[2], twth[1], twth[2] ) > dm / 2.0 then
+		out[1][1] = twth[1];
+		out[1][2] = twth[2];
+	else
+		out[1][1] = mid1[1];
+		out[1][2] = mid1[2];
+	end;
+	# Pick the last point - either next midpoint or next one-third point.
+	if euc( cs[1], cs[2], thrd[1], thrd[2] ) > dm / 2.0 then
+		out[3][1] = thrd[1];
+		out[3][2] = thrd[2];
+	else
+		out[3][1] = mid3[1];
+		out[3][2] = mid3[2];
+	end;
+
+	return out;
+end;
