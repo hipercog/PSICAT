@@ -154,6 +154,8 @@ begin
 end;
 
 
+
+
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine returns the Euclidean distance between two vertices
 #
@@ -170,6 +172,7 @@ begin
 	double euc = sqrt( (xdiff * xdiff) + (ydiff * ydiff) );
 	return euc;
 end;
+
 
 
 

@@ -4,10 +4,53 @@
 
 logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz"));
 
-include "Kanizsa.pcl"
+# include "Kanizsa.pcl"
+include "Shapes.pcl"
+include "Utilities.pcl"
+include "Randomness.pcl"
 
-#######-------#######-------#######-------#######-------#######-------
-# A subroutine to present the PSICAT task.
+# MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
+
+# COLOR GLOBALS - PASSED TO polyfilla() AND kanizsaShape()
+rgb_color BCOL = rgb_color(0, 0, 0, 0); # background color
+rgb_color FCOL = rgb_color(255, 255, 255, 0); # foreground, i.e. shape color
+rgb_color LCOL = rgb_color(255, 0, 0, 0); # primer line color
+
+# TIMING GLOBALS - USED IN kanizsaBlock()
+int KNZA_DUR = forever;
+int INTF_DUR = 150;
+int SOA_LOWER_DUR = 400;
+int SOA_UPPER_DUR = 600;
+
+# VISUAL DIMENSIONS GLOBALS - PASSED TO kanizsaShape() AND randCS()
+# display_device.width seems to return an int (not what documentation suggests?)
+int screen_width = display_device.width();
+int screen_height = display_device.height();
+
+# Diameter of the Pac-Man shapes
+double PAC_DIAM = double(screen_height) / 6.0;
+if screen_height > screen_width then
+	PAC_DIAM = double(screen_width) / 6.0;
+end;
+
+# highest absolute value of y-coordinate on the screen
+double total_max_y = double(display_device.height() / 2);
+# highest absolute value of x-coordinate
+double total_max_x = double(display_device.width() / 2);
+
+# define highest acceptable x- or y-coordinate absolute value for quadrangle
+int MAX_Y = int(total_max_y - 2.0 * PAC_DIAM);
+int MAX_X = int(total_max_x - 2.0 * PAC_DIAM);
+
+# define lowest acceptable x- or y-coordinate absolute value for quadrangle
+int MIN_Y = int(PAC_DIAM + 20.0);
+int MIN_X = int(PAC_DIAM + 20.0);
+
+
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+# A subroutine to present the whole PSICAT task.
 sub
 	PSICATprotocol
 begin
@@ -96,7 +139,173 @@ begin
 /**/
 end;
 
-##########################################
+
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
+#	Subroutine to present each block of the PSICAT task:
+#  Generates randomized kanizsa stimuli and primers.
+#
+#	regPoly : BOOLEAN, true = regular, false = irregular primers & Kanizsa shapes
+#	pactype : STRING, defines Pac-Man shapes as "annulus" or "ellipse"
+#	blockN : INTEGER, block number, increasing in increments of 10 from 0
+#	trialN : INTEGER, the number of trials in this block
+#
+sub
+	kanizsaBlock( bool regPoly, string pactype, int blockN, int trialN )
+begin
+	# Handy random number for making choices
+	double random_num = random();
+
+	# Control the number of vertices
+	int vtx = random(3, 4);
+	# COORDINATE ARRAY
+	array <double> rd_cs[vtx][2];
+	# Random rotation angles array
+	array< double > rnd[vtx];
+	# Rotation angles constraints, min, mux (= max - min)
+	double min = 20.0;
+	double mux = 320.0;
+
+	# Set which trial type we have : congruent or incongruent
+	string trialtype;
+
+	# TRIAL GENERATING LOOP
+	loop
+		int i = trialN
+	until
+		i == 0
+	begin
+		#fixation period
+		fixation_trial.present();
+/**
+Get random num vertices for primer/Kanizsa, then resize arrays to current size
+(comment next 3 lines for a fixed vertex count (triangles or quandrangles))
+*/
+		vtx = random(3, 4);
+		rd_cs.resize( vtx );
+		rnd.resize( vtx );
+/**/
+		# first randomize the coordinates for both stimuli
+		rd_cs = randCS( regPoly, vtx, MIN_X, MIN_Y, MAX_X, MAX_Y );
+
+	   # save coordinates in a string "log_coors" for the log file
+		string log_coors = "  [";
+		loop
+			int k = 1
+		until
+			k == vtx + 1
+		begin
+			log_coors = log_coors + " " + string(rd_cs[k][1]) + ",";
+			log_coors = log_coors + " " + string(rd_cs[k][2]) + ",";
+			k = k + 1;
+		end;
+		log_coors = log_coors + ",";
+		log_coors = log_coors + "]";
+
+		#randomize trialtype (congruent vs. incongruent)
+		random_num = random();
+		if random_num > 0.5 then
+			trialtype = "congruent";
+		else
+			trialtype = "incongruent";
+		end;
+
+		# IF statement sets target as shape or nonshape
+		#
+		# TARGET IS A SHAPE
+		if random() > 0.5 then
+			if trialtype == "congruent" then
+				#SHAPE PRIMER
+					# fix the rotations at zero to draw a shape
+					rnd = randR( vtx, 0.0, 0.0 );
+					#show subjective shape primer
+					kanizsaShape(rd_cs, PAC_DIAM, true, pactype, rnd, BCOL, FCOL, LCOL);
+					ev.set_event_code( log_coors  + ";" + string(151 + blockN) + ";Congruent;shape;primer;" + string(vtx) );	ev.set_port_code( 151+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
+					Kanizsa.set_duration( INTF_DUR );
+					Kanizsa.set_type( fixed );
+					Kanizsa.present();
+
+				#SHAPE TARGET
+					polyfilla(rd_cs, PAC_DIAM, false, pactype, BCOL, FCOL);
+					ev.set_event_code( log_coors  + ";" + string(152 + blockN) + ";Congruent;shape;target;" + string(vtx)  );	ev.set_port_code( 152+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
+					Kanizsa.set_duration( KNZA_DUR );
+					Kanizsa.set_type( first_response );
+					Kanizsa.present();
+			end;
+			if trialtype == "incongruent" then  #primer is a nonshape
+				#NONSHAPE PRIMER
+					rnd = randR( vtx, min, mux );
+					# show nonshape primer
+					kanizsaShape(rd_cs, PAC_DIAM, true, pactype, rnd, BCOL, FCOL, LCOL);
+					ev.set_event_code( log_coors  + ";" + string(153 + blockN) + ";InCon;nonShape;primer;" + string(vtx)  );	ev.set_port_code( 153+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
+					Kanizsa.set_duration( INTF_DUR );
+					Kanizsa.set_type( fixed );
+					Kanizsa.present();
+
+				#SHAPE TARGET
+					polyfilla(rd_cs, PAC_DIAM, false, pactype, BCOL, FCOL);
+					ev.set_event_code( log_coors  + ";" + string(154 + blockN) + ";InCon;shape;target;" + string(vtx) );	ev.set_port_code( 154+blockN );	ev.set_target_button( 2 );	# RIGHT-HAND RESPONSE
+					Kanizsa.set_duration( KNZA_DUR );
+					Kanizsa.set_type( first_response );
+					Kanizsa.present();
+			end;
+		# TARGET IS A NON-SHAPE
+		else
+			if trialtype == "congruent" then #primer is a nonshape
+				# randomize the rotations, same for both
+				rnd = randR( vtx, min, mux );
+				#NONSHAPE PRIMER
+					# show nonshape primer
+					kanizsaShape(rd_cs, PAC_DIAM, true, pactype, rnd, BCOL, FCOL, LCOL);
+					ev.set_event_code( log_coors  + ";" + string(155 + blockN) + ";Congruent;nonShape;primer;" + string(vtx) );	ev.set_port_code( 155+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
+					Kanizsa.set_duration( INTF_DUR );
+					Kanizsa.set_type( fixed );
+					Kanizsa.present();
+
+				#NONSHAPE TARGET
+					kanizsaShape(rd_cs, PAC_DIAM, false, pactype, rnd, BCOL, FCOL, LCOL);
+					ev.set_event_code( log_coors  + ";" + string(156 + blockN) + ";Congruent;nonShape;target;" + string(vtx) );	ev.set_port_code( 156+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
+					Kanizsa.set_duration( KNZA_DUR );
+					Kanizsa.set_type( first_response );
+					Kanizsa.present();
+			end;
+			if trialtype == "incongruent" then #primer is a shape
+				#SHAPE PRIMER
+					# fix the rotations at zero to draw a shape
+					rnd = randR( vtx, 0.0, 0.0 );
+					# show subjective shape primer
+					kanizsaShape(rd_cs, PAC_DIAM, true, pactype, rnd, BCOL, FCOL, LCOL);
+					ev.set_event_code( log_coors  + ";" + string(157 + blockN) + ";InCon;shape;primer;" + string(vtx) );	ev.set_port_code( 157+blockN );	ev.set_target_button( 0 );	# NO RESPONSE
+					Kanizsa.set_duration( INTF_DUR );
+					Kanizsa.set_type( fixed );
+					Kanizsa.present();
+
+				#NONSHAPE TARGET
+					# randomize the rotations
+					rnd = randR( vtx, min, mux );
+					# show nonshape primer
+					kanizsaShape(rd_cs, PAC_DIAM, false, pactype, rnd, BCOL, FCOL, LCOL);
+					ev.set_event_code( log_coors  + ";" + string(158 + blockN) + ";InCon;nonShape;target;" + string(vtx)  );	ev.set_port_code( 158+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
+					Kanizsa.set_duration( KNZA_DUR );
+          Kanizsa.set_type( first_response );
+          Kanizsa.present();
+			end;
+		end;
+
+		i = i-1;
+
+		#intertrial interval
+		SOA_trial.set_duration( random(SOA_LOWER_DUR, SOA_UPPER_DUR) );
+		SOA_trial.present();
+
+	end;
+end;
+
+
+
+
+#######-------#######-------#######-------#######-------#######-------#######---
 # Record that PSICAT.
 startAll.present();
 startAll.present();

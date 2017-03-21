@@ -142,6 +142,8 @@ begin
 end;
 
 
+
+
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine generates randomized rotation angles for non shape Kanizsas.
 # If both min & max = 0, output passed to nonshapes() will generate a shape.

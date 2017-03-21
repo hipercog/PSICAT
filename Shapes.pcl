@@ -1,8 +1,8 @@
 
 #######-------#######-------#######-------#######-------#######-------#######---
-#	Subroutine to generate a Kanizsa stimuli with randomly oriented Pacmen.
-# Routine is deterministic, i.e. all randomness is generated outside and passed
-# in so results can be replicated.
+#	Subroutine to generate a Kanizsa stimuli with randomly oriented Pac-Man shapes
+#  Routine is deterministic, i.e. all randomness is generated outside and passed
+#  in so results can be replicated.
 #
 #	coors : DOUBLE ARRAY, coordinates of the polygon.
 #	dims : DOUBLE, diameter of Pac-Man shapes
@@ -12,7 +12,7 @@
 #                     randomised nonshapes - primer and Kanizsa
 #
 sub
-	kanizsaShape( array< double,2 >& coors, double dims, bool prime, string pacmantype, array< double,1 >& rts )
+	kanizsaShape( array< double,2 >& coors, double dims, bool prime, string pacmantype, array< double,1 >& rts, rgb_color bkcol, rgb_color frcol, rgb_color lncol )
 begin
 	pyc.clear();
 	lyne.clear();
@@ -20,11 +20,11 @@ begin
 	# Coordinate count
 	int cnt = coors.count();
 
-	# Get midpoints so we can draw triangles into the Pacmen.
+	# Get midpoints so we can draw triangles into the Pac-Man shapes.
 	array< double > mids[cnt][2];
 	# Get points between mid and coors to draw smaller triangles into Pac-Man.
 	array< double > thrd[cnt][2];
-	# Get points between mid and coors+1 to draw triangles into Pacmen.
+	# Get points between mid and coors+1 to draw triangles into Pac-Man shapes.
 	array< double > twth[cnt][2];
 
 	double xt;
@@ -44,7 +44,7 @@ begin
 			twth[i][1] = (coors[i][1] + coors[i % cnt + 1][1] * 2.0) / 3.0;
       twth[i][2] = (coors[i][2] + coors[i % cnt + 1][2] * 2.0) / 3.0;
 		else
-			# Choose shorter lines to prevent covering other Pacmen inadvertently
+			# Use shorter lines to prevent covering other Pac-Man shapes inadvertently
 			# We select nearest valid point to coors.i x, y
 			xt = mids[i][1];
 			yt = mids[i][2];
@@ -84,17 +84,15 @@ begin
 
 	# Create triangle array
 	array< double > tri[3][2];
-#	triFill( coors[x]...diameter, array<> mid1, array<> mid3, array<> qrtr, array<> thrd, array<> thqt, array<> twth )
 
 	# Adjust behaviour for primer or Kanizsa
 	if prime == false then
 		# Set the requisite Kanizsa shape properties
-		lyne.set_line_color( BKGD_COLOR );
-		lyne.set_next_fill_color( BKGD_COLOR );
+		lyne.set_line_color( bkcol );
+		lyne.set_next_fill_color( bkcol );
 
 		# Initialise triangle vertices to fill the first Pacman
 		tri = triFill( coors[1], dims, mids[cnt], mids[1], thrd[1], twth[cnt] );
-#		tri[1] = thrd[cnt];		tri[2] = coors[1];		tri[3] = twth[1];
 
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
@@ -103,14 +101,13 @@ begin
 		# Check the triangle has filled the Pacman
 		correctTri(tri, dims);
 
-		# Do likewise for all other Pacmen
+		# Do likewise for all other Pac-Man shapes
 		loop
 			int k = 2;
 		until
 			k > cnt
 		begin
 			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
-#			tri[1] = thrd[k-1];		tri[2] = coors[k];		tri[3] = twth[k];
 			tri = rotateMat(tri, 2, rts[k]);
 			lyne.add_polygon( tri, true, 1.0, 0.0 );
 			correctTri(tri, dims);
@@ -120,7 +117,7 @@ begin
 		# Pick a Pacman type - Ellipse, Annullus or wrong.
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
-			pacman_e.set_color( FOREGD_CLR );
+			pacman_e.set_color( frcol );
 			loop
 				int i = 1;
 			until
@@ -153,15 +150,14 @@ begin
 		end;
 
 	#### If prime is true, just draw the outline shape ####
-# TODO - REPLACE DUPLICATE CODE WITH SUBROUTINE?
+ # TODO - REPLACE DUPLICATE CODE WITH SUBROUTINE?
 	else
 		# Set the requisite primer colours
-		lyne.set_line_color( TRNSPRNCY ); # TRNSPRNCY for red, FOREGD_CLR for white
-		lyne.set_next_fill_color( BKGD_COLOR );
+		lyne.set_line_color( lncol );
+		lyne.set_next_fill_color( bkcol );
 
 		# Initialise triangle vertices to fill the first Pacman
 		tri = triFill( coors[1], dims, mids[cnt], mids[1], thrd[1], twth[cnt] );
-#		tri[1] = thrd[cnt];		tri[2] = coors[1];		tri[3] = twth[1];
 
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
@@ -169,26 +165,25 @@ begin
 		lyne.add_line( tri[1][1], tri[1][2], tri[2][1], tri[2][2] );
 		lyne.line_to( tri[3][1], tri[3][2] );
 
-		# Now do likewise for all remaining Pacmen
+		# Now do likewise for all remaining Pac-Man shapes
 		loop
 			int k = 2;
 		until
 			k > cnt
 		begin
 			tri = triFill(coors[k], dims, mids[k - 1], mids[k], thrd[k], twth[k - 1]);
-#			tri[1] = thrd[k-1];		tri[2] = coors[k];		tri[3] = twth[k];
 			tri = rotateMat(tri, 2, rts[k]);
 			lyne.add_line( tri[1][1], tri[1][2], tri[2][1], tri[2][2] );
 			lyne.line_to( tri[3][1], tri[3][2] );
 			k = k + 1;
 		end;
-/**
-	USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
-*/
+    /**
+    	USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
+    */
 		# Pick a Pacman type - Ellipse, Annullus or wrong.
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
-			pacman_e.set_color( FOREGD_CLR );
+			pacman_e.set_color( frcol );
 			loop
 				int i = 1;
 			until
@@ -219,7 +214,7 @@ begin
 		else
 			return; # NO VALID PACMAN GIVEN...?
 		end;
-/**/
+  /**/
 	end;
 
 	lyne.redraw();
@@ -239,7 +234,7 @@ end;
 #	pacmantype : string, defines Pac-Man shapes as "annulus" or "ellipse"
 #
 sub
-	polyfilla( array< double,2 >& coors, double dims, bool prime, string pacmantype )
+	polyfilla( array< double,2 >& coors, double dims, bool prime, string pacmantype, rgb_color bkcol, rgb_color frcol )
 begin
 	pyc.clear();
 	lyne.clear();
@@ -260,7 +255,7 @@ begin
 		# Pick a pacman
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );
-			pacman_e.set_color( FOREGD_CLR );
+			pacman_e.set_color( frcol );
 			pacman_e.redraw();
 			loop
 				int i = 1;
@@ -293,12 +288,12 @@ begin
 			end;
 		end;
 		# Set the lyne properties
-		lyne.set_line_color( BKGD_COLOR );
-		lyne.set_next_fill_color( BKGD_COLOR );
+		lyne.set_line_color( bkcol );
+		lyne.set_next_fill_color( bkcol );
 	# If prime is true, just draw the outline shape
 	else
-		lyne.set_line_color( FOREGD_CLR );
-		lyne.set_next_fill_color( BKGD_COLOR );
+		lyne.set_line_color( frcol );
+		lyne.set_next_fill_color( bkcol );
 	end;
 	lyne.close(true);
 	lyne.redraw();
