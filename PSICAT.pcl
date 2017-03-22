@@ -8,6 +8,7 @@ logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz"));
 include "Shapes.pcl"
 include "Utilities.pcl"
 include "Randomness.pcl"
+include "Localise.pcl"
 
 # MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
 
@@ -54,18 +55,20 @@ int MIN_X = int(PAC_DIAM + 20.0);
 sub
 	PSICATprotocol
 begin
+  # Call this function to localise instructions to preferred language
+  # localise( "english" );
 	# Number of trials per block
 	int t = 110;
 	# Instructions to begin the protocol
 /**/
-	sCRT_instr_trial.present();
-	sCRT_resp_trial.present();
+	PSIC_instr_trial.present();
+	PSIC_resp_trial.present();
 
 	# Instructions for each break between blocks in the protocol
-	sCRT_respPic.clear();
-	sCRT_respPic.add_part( sCRT_text_2, 0, 220 );
-	sCRT_respPic.add_part( rPadPic, 0, 0 );
-	sCRT_respAud_ev.set_stimulus( sound2_relax );
+	PSIC_respPic.clear();
+	PSIC_respPic.add_part( PSIC_text_2, 0, 220 );
+	PSIC_respPic.add_part( rPadPic, 0, 0 );
+	PSIC_respAud_ev.set_stimulus( sound2_relax );
 /**/
 	stev.set_event_code( "Start block; ;1;irreg;" + string(t) );
 	stev.set_port_code( 145 );
@@ -74,8 +77,8 @@ begin
 	# Block of irregular, elliptical Kanizsas
 	kanizsaBlock( false, "ellipse", 0, t );
 		# Have a break
-		sCRT_respPic.add_part( sCRT_text_2a, 0, -150 );
-		sCRT_resp_trial.present();
+		PSIC_respPic.add_part( PSIC_text_2a, 0, -150 );
+		PSIC_resp_trial.present();
 		# Save this and prior blocks
 		save_trial.present();
 
@@ -86,9 +89,9 @@ begin
 	# Block of irregular, elliptical Kanizsas
 	kanizsaBlock( false, "ellipse", 10, t );
 		# Have a break
-		sCRT_respPic.remove_part( 3 );
-		sCRT_respPic.add_part( sCRT_text_2b, 0, -150 );
-		sCRT_resp_trial.present();
+		PSIC_respPic.remove_part( 3 );
+		PSIC_respPic.add_part( PSIC_text_2b, 0, -150 );
+		PSIC_resp_trial.present();
 		# Save this and prior blocks
 		save_trial.present();
 
@@ -98,9 +101,9 @@ begin
 	# Block of irregular, elliptical Kanizsas
 	kanizsaBlock( false, "ellipse", 20, t );
 		# Have a break
-		sCRT_respPic.remove_part( 3 );
-		sCRT_respPic.add_part( sCRT_text_2c, 0, -150 );
-		sCRT_resp_trial.present();
+		PSIC_respPic.remove_part( 3 );
+		PSIC_respPic.add_part( PSIC_text_2c, 0, -150 );
+		PSIC_resp_trial.present();
 		# Save this and prior blocks
 		save_trial.present();
 
@@ -110,9 +113,9 @@ begin
 	# Block of irregular, elliptical Kanizsas
 	kanizsaBlock( false, "ellipse", 30, t );
 		# Have a break
-		sCRT_respPic.remove_part( 3 );
-		sCRT_respPic.add_part( sCRT_text_2d, 0, -150 );
-		sCRT_resp_trial.present();
+		PSIC_respPic.remove_part( 3 );
+		PSIC_respPic.add_part( PSIC_text_2d, 0, -150 );
+		PSIC_resp_trial.present();
 		# Save this and prior blocks
 		save_trial.present();
 
