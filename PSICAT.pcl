@@ -5,25 +5,24 @@
 logfile.add_event_entry( date_time("ddmmyyyyhhnnsszz"));
 
 # include "Kanizsa.pcl"
-include "Shapes.pcl"
-include "Utilities.pcl"
-include "Randomness.pcl"
-include "Localise.pcl"
+include_once "Localise.pcl"
+include_once "Shapes.pcl"
+include_once "Randomness.pcl"
 
-# MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
+### MUST MIRROR THE TIMING AND COLOR CONSTANTS FROM THE SCE FILE!
 
-# COLOR GLOBALS - PASSED TO polyfilla() AND kanizsaShape()
+## COLOR GLOBALS - PASSED TO polyfilla() AND kanizsaShape()
 rgb_color BCOL = rgb_color(0, 0, 0, 0); # background color
 rgb_color FCOL = rgb_color(255, 255, 255, 0); # foreground, i.e. shape color
 rgb_color LCOL = rgb_color(255, 0, 0, 0); # primer line color
 
-# TIMING GLOBALS - USED IN kanizsaBlock()
+## TIMING GLOBALS - USED IN kanizsaBlock()
 int KNZA_DUR = forever;
 int INTF_DUR = 150;
 int SOA_LOWER_DUR = 400;
 int SOA_UPPER_DUR = 600;
 
-# VISUAL DIMENSIONS GLOBALS - PASSED TO kanizsaShape() AND randCS()
+## VISUAL DIMENSIONS GLOBALS - PASSED TO kanizsaShape() AND randCS()
 # display_device.width seems to return an int (not what documentation suggests?)
 int screen_width = display_device.width();
 int screen_height = display_device.height();
@@ -46,101 +45,6 @@ int MAX_X = int(total_max_x - 2.0 * PAC_DIAM);
 # define lowest acceptable x- or y-coordinate absolute value for quadrangle
 int MIN_Y = int(PAC_DIAM + 20.0);
 int MIN_X = int(PAC_DIAM + 20.0);
-
-
-
-
-#######-------#######-------#######-------#######-------#######-------#######---
-# A subroutine to present the whole PSICAT task.
-sub
-	PSICATprotocol
-begin
-  # Call this function to localise instructions to preferred language
-  # localise( "english" );
-	# Number of trials per block
-	int t = 110;
-	# Instructions to begin the protocol
-/**/
-	PSIC_instr_trial.present();
-	PSIC_resp_trial.present();
-
-	# Instructions for each break between blocks in the protocol
-	PSIC_respPic.clear();
-	PSIC_respPic.add_part( PSIC_text_2, 0, 220 );
-	PSIC_respPic.add_part( rPadPic, 0, 0 );
-	PSIC_respAud_ev.set_stimulus( sound2_relax );
-/**/
-	stev.set_event_code( "Start block; ;1;irreg;" + string(t) );
-	stev.set_port_code( 145 );
-	startAll.present();
-	# 1st block
-	# Block of irregular, elliptical Kanizsas
-	kanizsaBlock( false, "ellipse", 0, t );
-		# Have a break
-		PSIC_respPic.add_part( PSIC_text_2a, 0, -150 );
-		PSIC_resp_trial.present();
-		# Save this and prior blocks
-		save_trial.present();
-
-	stev.set_event_code( "Start block; ;2;irreg;" + string(t) );
-	stev.set_port_code( 146 );
-	startAll.present();
-	#2nd block
-	# Block of irregular, elliptical Kanizsas
-	kanizsaBlock( false, "ellipse", 10, t );
-		# Have a break
-		PSIC_respPic.remove_part( 3 );
-		PSIC_respPic.add_part( PSIC_text_2b, 0, -150 );
-		PSIC_resp_trial.present();
-		# Save this and prior blocks
-		save_trial.present();
-
-	stev.set_event_code( "Start block; ;3;irreg;" + string(t) );
-	stev.set_port_code( 147 );
-	startAll.present();
-	# Block of irregular, elliptical Kanizsas
-	kanizsaBlock( false, "ellipse", 20, t );
-		# Have a break
-		PSIC_respPic.remove_part( 3 );
-		PSIC_respPic.add_part( PSIC_text_2c, 0, -150 );
-		PSIC_resp_trial.present();
-		# Save this and prior blocks
-		save_trial.present();
-
-	stev.set_event_code( "Start block; ;4;irreg;" + string(t) );
-	stev.set_port_code( 148 );
-	startAll.present();
-	# Block of irregular, elliptical Kanizsas
-	kanizsaBlock( false, "ellipse", 30, t );
-		# Have a break
-		PSIC_respPic.remove_part( 3 );
-		PSIC_respPic.add_part( PSIC_text_2d, 0, -150 );
-		PSIC_resp_trial.present();
-		# Save this and prior blocks
-		save_trial.present();
-
-	stev.set_event_code( "Start block; ;5;irreg;" + string(t) );
-	stev.set_port_code( 149 );
-	startAll.present();
-	# Block of irregular, elliptical Kanizsas
-	kanizsaBlock( false, "ellipse", 40, t );
-
-
-/** DEBUG LOOP RANDOMISES THE REGULARITY OF EACH KANIZSA SHAPE
-	loop
-		int i = 1;
-	until
-		i > t
-	begin
-		if random() > 0.5 then
-			kanizsaBlock( false, "ellipse", 40, 1 );
-		else
-			kanizsaBlock( true, "ellipse", 40, 1 );
-		end;
-		i = i + 1 ;
-	end;
-/**/
-end;
 
 
 
@@ -305,6 +209,98 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 	end;
 end;
 
+
+#######-------#######-------#######-------#######-------#######-------#######---
+# A subroutine to present the whole PSICAT task.
+sub
+	PSICATprotocol
+begin
+  # Call this function to localise instructions to preferred language
+  # localise( "english" );
+	# Number of trials per block
+	int t = 110;
+	# Instructions to begin the protocol
+/**/
+	PSIC_instr_trial.present();
+	PSIC_resp_trial.present();
+
+	# Instructions for each break between blocks in the protocol
+	PSIC_respPic.clear();
+	PSIC_respPic.add_part( PSIC_text_2, 0, 220 );
+	PSIC_respPic.add_part( rPadPic, 0, 0 );
+	PSIC_respAud_ev.set_stimulus( sound2_relax );
+/**/
+	stev.set_event_code( "Start block; ;1;irreg;" + string(t) );
+	stev.set_port_code( 145 );
+	startAll.present();
+	# 1st block
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 0, t );
+		# Have a break
+		PSIC_respPic.add_part( PSIC_text_2a, 0, -150 );
+		PSIC_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;2;irreg;" + string(t) );
+	stev.set_port_code( 146 );
+	startAll.present();
+	#2nd block
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 10, t );
+		# Have a break
+		PSIC_respPic.remove_part( 3 );
+		PSIC_respPic.add_part( PSIC_text_2b, 0, -150 );
+		PSIC_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;3;irreg;" + string(t) );
+	stev.set_port_code( 147 );
+	startAll.present();
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 20, t );
+		# Have a break
+		PSIC_respPic.remove_part( 3 );
+		PSIC_respPic.add_part( PSIC_text_2c, 0, -150 );
+		PSIC_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;4;irreg;" + string(t) );
+	stev.set_port_code( 148 );
+	startAll.present();
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 30, t );
+		# Have a break
+		PSIC_respPic.remove_part( 3 );
+		PSIC_respPic.add_part( PSIC_text_2d, 0, -150 );
+		PSIC_resp_trial.present();
+		# Save this and prior blocks
+		save_trial.present();
+
+	stev.set_event_code( "Start block; ;5;irreg;" + string(t) );
+	stev.set_port_code( 149 );
+	startAll.present();
+	# Block of irregular, elliptical Kanizsas
+	kanizsaBlock( false, "ellipse", 40, t );
+
+
+/** DEBUG LOOP RANDOMISES THE REGULARITY OF EACH KANIZSA SHAPE
+	loop
+		int i = 1;
+	until
+		i > t
+	begin
+		if random() > 0.5 then
+			kanizsaBlock( false, "ellipse", 40, 1 );
+		else
+			kanizsaBlock( true, "ellipse", 40, 1 );
+		end;
+		i = i + 1 ;
+	end;
+/**/
+end;
 
 
 

@@ -13,23 +13,13 @@ begin
 
     ## FIRST SET THE TEXT
     PSIC_text_0.set_caption(
-    "Press the RIGHT key when the Pac-Man objects together
-    form an invisible 3 or 4-cornered shape,
-    and the LEFT key when there is no shape.
-
-    There will be five rounds, with a break between each
-
-    Try to be fast, but accurate.");
+    "Press the RIGHT key when the Pac-Man objects together\n form an invisible 3 or 4-cornered shape,\n and the LEFT key when there is no shape.\n\n There will be five rounds, with a break between each.\n\n Try to be fast, but accurate.");
 
     PSIC_text_1c.set_caption(
     "When you are ready, press any key to begin.");
 
     PSIC_text_2.set_caption(
-    "Now you have a moment to rest and clear your head.
-    Another block of stimuli will presented when you press the button,
-    and your task will remain the same.
-    -
-    When you are ready, press any key to begin.");
+    "Now you have a moment to rest and clear your head.\n Another block of stimuli will presented when you press the button,\n and your task will remain the same.\n -\n When you are ready, press any key to begin.");
 
     PSIC_text_2a.set_caption("There are four rounds remaining.");
     PSIC_text_2b.set_caption("There are three rounds remaining.");

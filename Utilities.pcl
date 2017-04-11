@@ -1,3 +1,4 @@
+
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine to rotate a matrix about one of its own vertices
 #	Returns the rotated matrix.
@@ -61,7 +62,7 @@ end;
 #	dims : DOUBLE, diameter of the Pacman - i.e. triangle height must be > dims/2
 #
 sub
-	bool correctTri( array< double,2 >& c, double dims )
+	array< double,2 > correctTri( array< double,2 >& c, double dims )
 begin
 	# Return value
 	array< double > rect[4][2];
@@ -145,12 +146,12 @@ begin
 		rect[4][1] = p4x; 		rect[4][2] = p4y;
 
 		# Draw the correction polygon
-		lyne.add_polygon( rect, true, 1.0, 0.0 );
+		# lyne.add_polygon( rect, true, 1.0, 0.0 );
 
 		# report that fill part not working, to prompt for new random coordinates.
-		return false;
+		return rect;
 	end;
-	return true;
+	return c;
 end;
 
 

@@ -1,3 +1,4 @@
+include_once "Utilities.pcl"
 
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine to generate a Kanizsa stimuli with randomly oriented Pac-Man shapes
@@ -35,7 +36,7 @@ begin
 		i > cnt
 	begin
 		mids[i][1] = (coors[i][1] + coors[i % cnt + 1][1]) / 2.0;
-    mids[i][2] = (coors[i][2] + coors[i % cnt + 1][2]) / 2.0;
+      mids[i][2] = (coors[i][2] + coors[i % cnt + 1][2]) / 2.0;
 
 		if prime == true then
 			# Choose longer lines to display salience better
@@ -96,10 +97,10 @@ begin
 
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
+		# Obtain the correct triangle to fill the Pacman
+	   tri = correctTri(tri, dims);
 		# Add the triangle polygon
 		lyne.add_polygon( tri, true, 1.0, 0.0 );
-		# Check the triangle has filled the Pacman
-		correctTri(tri, dims);
 
 		# Do likewise for all other Pac-Man shapes
 		loop
@@ -109,8 +110,8 @@ begin
 		begin
 			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
 			tri = rotateMat(tri, 2, rts[k]);
+			tri = correctTri(tri, dims);
 			lyne.add_polygon( tri, true, 1.0, 0.0 );
-			correctTri(tri, dims);
 			k = k + 1;
 		end;
 
