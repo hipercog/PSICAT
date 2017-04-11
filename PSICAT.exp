@@ -34,14 +34,14 @@
 <lfn></lfn>
 </docs>
 <dp_list></dp_list>
-<dsd>C:\Users\uni\Desktop\PSICAT</dsd>
+<dsd>C:\Users\uni\Desktop\PSICAT\Stimuli</dsd>
 <dxv>8</dxv>
 <efs>
-<filename>C:\Users\uni\Desktop\PSICAT\PSICAT.sce</filename>
-<filename>C:\Users\uni\Desktop\PSICAT\PSICATpractice.sce</filename>
 <filename>C:\Users\uni\Desktop\PSICAT\Utilities.pcl</filename>
 <filename>C:\Users\uni\Desktop\PSICAT\Localise.pcl</filename>
 <filename>C:\Users\uni\Desktop\PSICAT\PSICAT.pcl</filename>
+<filename>C:\Users\uni\Desktop\PSICAT\PSICAT.sce</filename>
+<filename>C:\Users\uni\Desktop\PSICAT\PSICATpractice.sce</filename>
 <filename>C:\Users\uni\Desktop\PSICAT\Randomness.pcl</filename>
 <filename>C:\Users\uni\Desktop\PSICAT\Shapes.pcl</filename>
 </efs>

@@ -1,5 +1,7 @@
 include_once "Utilities.pcl"
 
+include "Utilities.pcl"
+
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine to generate a Kanizsa stimuli with randomly oriented Pac-Man shapes
 #  Routine is deterministic, i.e. all randomness is generated outside and passed
