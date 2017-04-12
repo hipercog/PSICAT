@@ -1,7 +1,5 @@
 include_once "Utilities.pcl"
 
-include "Utilities.pcl"
-
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine to generate a Kanizsa stimuli with randomly oriented Pac-Man shapes
 #  Routine is deterministic, i.e. all randomness is generated outside and passed
@@ -99,8 +97,8 @@ begin
 
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
-		# Obtain the correct triangle to fill the Pacman
-	   tri = correctTri(tri, dims);
+		# Obtain a correction polygon to fill the Pacman
+	   lyne.add_polygon( correctTri(tri, dims), true, 1.0, 0.0 );
 		# Add the triangle polygon
 		lyne.add_polygon( tri, true, 1.0, 0.0 );
 
@@ -112,7 +110,7 @@ begin
 		begin
 			tri = triFill( coors[k], dims, mids[k-1], mids[k], thrd[k], twth[k-1] );
 			tri = rotateMat(tri, 2, rts[k]);
-			tri = correctTri(tri, dims);
+			lyne.add_polygon( correctTri(tri, dims), true, 1.0, 0.0 );
 			lyne.add_polygon( tri, true, 1.0, 0.0 );
 			k = k + 1;
 		end;
@@ -271,9 +269,9 @@ begin
 			end;
 		end;
 		if pacmantype == "annulus" then
-			double dims1_in = (dims/2.0)*0.75;
-			double dims1_out = dims/2.0 ;
-			double dims2_in = dims *0.75 ;
+			double dims1_in = (dims / 2.0) * 0.75;
+			double dims1_out = dims / 2.0 ;
+			double dims2_in = dims * 0.75 ;
 			double dims2_out = dims ;
 			annulus1.set_dimensions(dims1_in, dims1_in, dims1_out, dims1_out);
 			annulus2.set_dimensions(dims2_in, dims2_in, dims2_out, dims2_out);

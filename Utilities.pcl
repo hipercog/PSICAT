@@ -1,5 +1,4 @@
 
-
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine to rotate a matrix about one of its own vertices
 #	Returns the rotated matrix.
@@ -56,7 +55,7 @@ end;
 
 #######-------#######-------#######-------#######-------#######-------#######---
 #	Subroutine checks that a triangle covers an ellipse to make a Pac-Man shape,
-# draws corrected rectangle necessary to correct.
+#  draws corrected rectangle necessary to correct.
 #	Returns true if triangle covers the ellipse - false if correction was needed.
 #
 #	c : DOUBLE ARRAY, coordinate matrix holds the triangle to be checked
@@ -89,16 +88,16 @@ begin
 		double fy = 0.0;
 		double deltx = h;
 		double delty = h;
-	# these are defined here for debugging
+	   # these are defined here for debugging
 		double ax = 1.0;
 		double ay = 1.0;
 
 		######	MUST ORIENT NEW RECTANLGE CORRECTLY!	######
 		# If y diffs are 0 then base is horizontal (slope 0),
-    #  abil is vertical (slope undefined); otherwise:
+      #  abil is vertical (slope undefined); otherwise:
 		if ydiffb != 0.0 then
 			# If x diffs are 0 then base is vertical (slope undefined),
-      #  abil is horizontal (slope 0); otherwise:
+		   #  abil is horizontal (slope 0); otherwise:
 			if xdiffb != 0.0 then
 				# Slope of base
 				mb = ydiffb / xdiffb;
@@ -137,7 +136,7 @@ begin
 		fy = delty * fy;
 
 		# Extra points needed. If triangle base is vertical, y's are unchanged...
-    # If horizontal, x's unchanged.
+      # If horizontal, x's unchanged.
 		double p4x = c[1][1] + fx;	double p4y = c[1][2] + fy;
 		double p3x = c[3][1] + fx;	double p3y = c[3][2] + fy;
 		# Finally populate new polygon to cover Pacman
@@ -146,13 +145,10 @@ begin
 		rect[3][1] = p3x; 		rect[3][2] = p3y;
 		rect[4][1] = p4x; 		rect[4][2] = p4y;
 
-		# Draw the correction polygon
-		# lyne.add_polygon( rect, true, 1.0, 0.0 );
-
-		# report that fill part not working, to prompt for new random coordinates.
-		return rect;
 	end;
-	return c;
+
+	# return the corrected fill part
+	return rect;
 end;
 
 

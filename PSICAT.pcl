@@ -46,12 +46,6 @@ int MIN_Y = int(PAC_DIAM + 20.0);
 int MIN_X = int(PAC_DIAM + 20.0);
 
 
-## INCLUDE OTHER PCL FILES
-include "Shapes.pcl"
-include "Randomness.pcl"
-include "Localise.pcl"
-
-
 
 
 #######-------#######-------#######-------#######-------#######-------#######---
