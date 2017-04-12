@@ -84,18 +84,18 @@ begin
 	begin
 		#fixation period
 		fixation_trial.present();
-/**
-Get random num vertices for primer/Kanizsa, then resize arrays to current size
-(comment next 3 lines for a fixed vertex count (triangles or quandrangles))
-*/
+		/**
+		Get random num vertices for primer/Kanizsa, then resize arrays to current size
+		(comment next 3 lines for a fixed vertex count (triangles or quandrangles))
+		*/
 		vtx = random(3, 4);
 		rd_cs.resize( vtx );
 		rnd.resize( vtx );
-/**/
+		/**/
 		# first randomize the coordinates for both stimuli
 		rd_cs = randCS( regPoly, vtx, MIN_X, MIN_Y, MAX_X, MAX_Y );
 
-	   # save coordinates in a string "log_coors" for the log file
+		# save coordinates in a string "log_coors" for the log file
 		string log_coors = "  [";
 		loop
 			int k = 1
@@ -194,8 +194,8 @@ Get random num vertices for primer/Kanizsa, then resize arrays to current size
 					kanizsaShape(rd_cs, PAC_DIAM, false, pactype, rnd, BCOL, FCOL, LCOL);
 					ev.set_event_code( log_coors  + ";" + string(158 + blockN) + ";InCon;nonShape;target;" + string(vtx)  );	ev.set_port_code( 158+blockN );	ev.set_target_button( 1 );	# LEFT-HAND RESPONSE
 					Kanizsa.set_duration( KNZA_DUR );
-          Kanizsa.set_type( first_response );
-          Kanizsa.present();
+					Kanizsa.set_type( first_response );
+					Kanizsa.present();
 			end;
 		end;
 
@@ -219,7 +219,7 @@ begin
 	# Number of trials per block
 	int t = 110;
 	# Instructions to begin the protocol
-/**/
+	/**/
 	PSIC_instr_trial.present();
 	PSIC_resp_trial.present();
 
@@ -228,7 +228,7 @@ begin
 	PSIC_respPic.add_part( PSIC_text_2, 0, 220 );
 	PSIC_respPic.add_part( rPadPic, 0, 0 );
 	PSIC_respAud_ev.set_stimulus( sound2_relax );
-/**/
+	/**/
 	stev.set_event_code( "Start block; ;1;irreg;" + string(t) );
 	stev.set_port_code( 145 );
 	startAll.present();

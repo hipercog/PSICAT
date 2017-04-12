@@ -36,14 +36,14 @@ begin
 		i > cnt
 	begin
 		mids[i][1] = (coors[i][1] + coors[i % cnt + 1][1]) / 2.0;
-      mids[i][2] = (coors[i][2] + coors[i % cnt + 1][2]) / 2.0;
+		mids[i][2] = (coors[i][2] + coors[i % cnt + 1][2]) / 2.0;
 
 		if prime == true then
 			# Choose longer lines to display salience better
 			thrd[i][1] = (coors[i][1] * 2.0 + coors[i % cnt + 1][1]) / 3.0;
-      thrd[i][2] = (coors[i][2] * 2.0 + coors[i % cnt + 1][2]) / 3.0;
+			thrd[i][2] = (coors[i][2] * 2.0 + coors[i % cnt + 1][2]) / 3.0;
 			twth[i][1] = (coors[i][1] + coors[i % cnt + 1][1] * 2.0) / 3.0;
-      twth[i][2] = (coors[i][2] + coors[i % cnt + 1][2] * 2.0) / 3.0;
+			twth[i][2] = (coors[i][2] + coors[i % cnt + 1][2] * 2.0) / 3.0;
 		else
 			# Use shorter lines to prevent covering other Pac-Man shapes inadvertently
 			# We select nearest valid point to coors.i x, y
@@ -98,7 +98,7 @@ begin
 		# Rotate the triangle first
 		tri = rotateMat(tri, 2, rts[1]);
 		# Obtain a correction polygon to fill the Pacman
-	   lyne.add_polygon( correctTri(tri, dims), true, 1.0, 0.0 );
+		lyne.add_polygon( correctTri(tri, dims), true, 1.0, 0.0 );
 		# Add the triangle polygon
 		lyne.add_polygon( tri, true, 1.0, 0.0 );
 
@@ -178,9 +178,9 @@ begin
 			lyne.line_to( tri[3][1], tri[3][2] );
 			k = k + 1;
 		end;
-    /**
-    	USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
-    */
+		/**
+		USE THIS BLOCK TO ADD DISKS IN THE PRIMER AS WELL AS THE TARGET!!
+		*/
 		# Pick a Pacman type - Ellipse, Annullus or wrong.
 		if pacmantype == "ellipse" then
 			pacman_e.set_dimensions( dims, dims );

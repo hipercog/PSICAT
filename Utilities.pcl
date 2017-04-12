@@ -69,8 +69,8 @@ begin
 	# Measure the height of the triangle. Coordinate 2 will be the apex.
 	# Area = http://www.mathopenref.com/coordtrianglearea.html
 	double area = abs((c[1][1] * (c[2][2] - c[3][2]) +
-							       c[2][1] * (c[3][2] - c[1][2]) +
-							       c[3][1] * (c[1][2] - c[2][2]) ) / 2.0);
+	                   c[2][1] * (c[3][2] - c[1][2]) +
+	                   c[3][1] * (c[1][2] - c[2][2]) ) / 2.0);
 	# Euclidean distance between contra-apical vertices = triangle base length
 	double xdiffb = c[1][1] - c[3][1];
 	double ydiffb = c[1][2] - c[3][2];
@@ -88,16 +88,16 @@ begin
 		double fy = 0.0;
 		double deltx = h;
 		double delty = h;
-	   # these are defined here for debugging
+		# these are defined here for debugging
 		double ax = 1.0;
 		double ay = 1.0;
 
 		######	MUST ORIENT NEW RECTANLGE CORRECTLY!	######
 		# If y diffs are 0 then base is horizontal (slope 0),
-      #  abil is vertical (slope undefined); otherwise:
+		#  abil is vertical (slope undefined); otherwise:
 		if ydiffb != 0.0 then
 			# If x diffs are 0 then base is vertical (slope undefined),
-		   #  abil is horizontal (slope 0); otherwise:
+			#  abil is horizontal (slope 0); otherwise:
 			if xdiffb != 0.0 then
 				# Slope of base
 				mb = ydiffb / xdiffb;
@@ -136,7 +136,7 @@ begin
 		fy = delty * fy;
 
 		# Extra points needed. If triangle base is vertical, y's are unchanged...
-      # If horizontal, x's unchanged.
+		# If horizontal, x's unchanged.
 		double p4x = c[1][1] + fx;	double p4y = c[1][2] + fy;
 		double p3x = c[3][1] + fx;	double p3y = c[3][2] + fy;
 		# Finally populate new polygon to cover Pacman

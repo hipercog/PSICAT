@@ -7,39 +7,39 @@
 #	locality : STRING, name of language to localise to, current options: "english"
 #
 sub
-  localise( string locality )
+	localise( string locality )
 begin
-  if locality == "english" then
+	if locality == "english" then
 
-    ## FIRST SET THE TEXT
-    PSIC_text_0.set_caption(
-    "Press the RIGHT key when the Pac-Man objects together\n form an invisible 3 or 4-cornered shape,\n and the LEFT key when there is no shape.\n\n There will be five rounds, with a break between each.\n\n Try to be fast, but accurate.");
+		## FIRST SET THE TEXT
+		PSIC_text_0.set_caption(
+		"Press the RIGHT key when the Pac-Man objects together\n form an invisible 3 or 4-cornered shape,\n and the LEFT key when there is no shape.\n\n There will be five rounds, with a break between each.\n\n Try to be fast, but accurate.");
 
-    PSIC_text_1c.set_caption(
-    "When you are ready, press any key to begin.");
+		PSIC_text_1c.set_caption(
+		"When you are ready, press any key to begin.");
 
-    PSIC_text_2.set_caption(
-    "Now you have a moment to rest and clear your head.\n Another block of stimuli will presented when you press the button,\n and your task will remain the same.\n -\n When you are ready, press any key to begin.");
+		PSIC_text_2.set_caption(
+		"Now you have a moment to rest and clear your head.\n Another block of stimuli will presented when you press the button,\n and your task will remain the same.\n -\n When you are ready, press any key to begin.");
 
-    PSIC_text_2a.set_caption("There are four rounds remaining.");
-    PSIC_text_2b.set_caption("There are three rounds remaining.");
-    PSIC_text_2c.set_caption("There are two rounds remaining.");
-    PSIC_text_2d.set_caption("There is one round remaining.");
+		PSIC_text_2a.set_caption("There are four rounds remaining.");
+		PSIC_text_2b.set_caption("There are three rounds remaining.");
+		PSIC_text_2c.set_caption("There are two rounds remaining.");
+		PSIC_text_2d.set_caption("There is one round remaining.");
 
-    /** SECOND SET THE SOUNDS. NO ALTERNATIVE WAV FILES ARE PROVIDED, SO THIS
-        CODE IS EXCLUDED BY DEFAULT.
-    * /
-    sound1_wav.set_filename("./Stimuli/instrWavs/eng-instructions.wav");
-    sound1_wav.unload();
-    sound1_wav.load();
+		/** SECOND, SET THE SOUNDS. NO ALTERNATIVE WAV FILES ARE PROVIDED,
+		    SO THIS CODE IS EXCLUDED BY DEFAULT.
+		* /
+		sound1_wav.set_filename("./Stimuli/instrWavs/eng-instructions.wav");
+		sound1_wav.unload();
+		sound1_wav.load();
 
-    sound2_wav.set_filename("./Stimuli/instrWavs/eng-relax.wav");
-    sound2_wav.unload();
-    sound2_wav.load();
+		sound2_wav.set_filename("./Stimuli/instrWavs/eng-relax.wav");
+		sound2_wav.unload();
+		sound2_wav.load();
 
-    sound3_wav.set_filename("./Stimuli/instrWavs/eng-responsepad.wav");
-    sound3_wav.unload();
-    sound3_wav.load();
-    /**/
-  end;
+		sound3_wav.set_filename("./Stimuli/instrWavs/eng-responsepad.wav");
+		sound3_wav.unload();
+		sound3_wav.load();
+		/**/
+	end;
 end;
