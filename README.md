@@ -1,5 +1,8 @@
-# Kanizsa_Prime
-This repository contains Neurobs Presentation scripts to present completely configurable 3 and 4 vertex Kanizsa stimuli, i.e. Pac-Man shapes delineating triangular or square, regular or irregular, gestalt shapes. Shapes primers can be displayed before each stimulus, consisting of two red lines per Pac-Man, of the same angle and length as the angular Pac-Man inset ('mouth').
+![PSICAT logo](https://raw.githubusercontent.com/zenBen/Kanizsa_Prime/master/Stimuli/psicat.png)
+
+# Description
+
+This repository contains the code for PSICAT, a sustained attention test. PSICAT is built on Neurobs Presentation scripts to present completely configurable 3 and 4 vertex Kanizsa stimuli, i.e. Pac-Man shapes delineating triangular or square, regular or irregular, gestalt shapes. Shapes primers can be displayed before each stimulus, consisting of two red lines per Pac-Man, of the same angle and length as the angular Pac-Man inset ('mouth').
 
 The code is freely available to use or modify under the MIT licence.
 
