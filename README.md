@@ -34,3 +34,26 @@ Five PCL code files are included (listed in order of compilation):
 
 ## Localisation
 The protocol is localised, meaning that any language can be used for instructions if the text strings and audio wavefiles are provided. Text objects and audio instruction files are defined in `PSICAT.sce` to be in Finnish. The subroutine `localise()` will reset the text captions and audio wavefile filenames, given an argument string of the preferred language name. Currently only English is supported, and not for audio; audio instruction files are provided only in Finnish. However the function shows the complete example code which needs only to be uncommented once audio files are available.
+
+## Output
+The protocol is configured to write the following port codes:
+
+* 144 = Stimulus onset asynchrony (or intertrial interval)
+* 143 = fixation cross display
+* 254 = task start
+* 255 = task end
+* 190, 199 = Response pad buttons for 2 target classes
+
+Each of five blocks are preceded by 'Start block' codes with triggers: 145, 146, 147, 148, 149
+Condition codes for block 1 will be as below. All following blocks increment these codes by +10, giving 161-168, 171-178, etc.
+
+* 151	:	shape primer for congruent shape target
+* 152	:	shape target with congruent shape primer
+* 153	:	nonshape primer for incongruent shape target
+* 154	:	shape target with incongruent nonshape primer
+* 155	:	nonshape primer for congruent nonshape target
+* 156	:	nonshape target with congruent nonshape primer
+* 157	:	shape primer for incongruent nonshape target
+* 158	:	nonshape target with incongruent shape primer
+
+The protocol also writes extra details to the Presentation log file, including the number and screen coordinates of the shape vertices.
