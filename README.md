@@ -44,7 +44,9 @@ PSICAT presents entirely computer-generated test stimuli. Thus the only stimulus
 * an example picture for the response device, this could be updated by the user to their own device
 * example pictures of Kanizsa shapes and non-shapes: in our experiments these were removed from the automated instructions in favour of showing on a sheet of paper by the research assistant. Users should decide their own approach.
 
-There are also instruction audio files in Finnish, recorded by and copyright of Kristiina Juurmaa. The content of the recordings matches the text instructions to be found in PSICAT.sce. To localise, users should record their own audio and edit `Localise.pcl` to enable switching of the file pointers.
+There are also instruction audio files in Finnish, recorded by and copyright of Kristiina Juurmaa. The content of the recordings matches the text instructions to be found in PSICAT.sce. To localise, users should record their own audio and edit `Localise.pcl` to enable switching of the file pointers. Audio wav files are linked under `Stimuli\instrWavs\`, but are tracked with git LFS; for those who wish to clone without heavy downloads do 
+
+```git lfs clone https://github.com/zenBen/PSICAT.git```
 
 ## Localisation
 The protocol is localised, meaning that any language can be used for instructions if the text strings and audio wavefiles are provided. Text objects and audio instruction files are defined in `PSICAT.sce` to be in Finnish. The subroutine `localise()` will reset the text captions and audio wavefile filenames, given an argument string of the preferred language name. Currently only English is supported, and not for audio; audio instruction files are provided only in Finnish. However the function shows the complete example code which needs only to be uncommented once audio files are available.
