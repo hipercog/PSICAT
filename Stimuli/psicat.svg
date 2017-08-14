@@ -23,14 +23,14 @@
      id="defs4487" />
   <sodipodi:namedview
      id="base"
-     pagecolor="#000000"
+     pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.5"
-     inkscape:cx="376.03911"
-     inkscape:cy="522.13553"
+     inkscape:zoom="0.35355339"
+     inkscape:cx="-34.586338"
+     inkscape:cy="427.02601"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -40,7 +40,23 @@
      inkscape:window-height="1043"
      inkscape:window-x="1920"
      inkscape:window-y="0"
-     inkscape:window-maximized="1" />
+     inkscape:window-maximized="1">
+    <sodipodi:guide
+       position="0,66.145834"
+       orientation="1,0"
+       id="guide4491"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="189.97084,40.216667"
+       orientation="1,0"
+       id="guide4493"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="122.2375,0"
+       orientation="0,1"
+       id="guide4495"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
   <metadata
      id="metadata4490">
     <rdf:RDF>
@@ -63,8 +79,8 @@
        id="rect4490"
        width="275.92264"
        height="241.1488"
-       x="-57.074406"
-       y="78.076195" />
+       x="-45.432739"
+       y="77.547028" />
     <g
        id="g5112"
        transform="matrix(0.93553568,0,0,1,-5.4742512,46.392084)">
@@ -128,5 +144,18 @@
          inkscape:transform-center-y="-38.017121"
          style="opacity:1;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.30018175;stroke-linecap:square;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
     </g>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:12.69999981px;line-height:125%;font-family:Sans;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       x="-2.6458335"
+       y="296.99997"
+       id="text4499"><tspan
+         sodipodi:role="line"
+         id="tspan4497"
+         x="-2.6458335"
+         y="296.99997"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:42.33333206px;font-family:'Liberation Mono';-inkscape-font-specification:'Liberation Mono';fill:#c7c7c7;fill-opacity:1;stroke-width:0.26458332px">PSI<tspan
+   style="letter-spacing:15.875px"
+   id="tspan4501"> </tspan>CAT</tspan></text>
   </g>
 </svg>
