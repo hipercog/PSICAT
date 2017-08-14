@@ -9,7 +9,7 @@ _Cowley, B. (2017) The PSICAT protocol - Primed Subjective Illusory Contour Atte
 
 If the protocol or any part of the code is used in published research, authors should cite the publication above in full, and link to this repository for the benefit of their readers to validate their work.
 
-## Scenarios
+## Code Files
 Two scenario files are included:
 * `PSICAT.sce` - The main protocol scenario, which defines the Presentation objects (header parameters, stimuli, trials), and links to `PSICAT.pcl` to actually run the protocol.
 * `PSICATpractice.sce` - A practice scenario, contains the same SDL code as `PSICAT.sce`, but defines its own PCL structure for just 12 trial presentations.
@@ -31,6 +31,17 @@ Five PCL code files are included (listed in order of compilation):
   * `randCS()` - returns an [i][2] array of randomized coordinates
   * `randR()` - generates randomized rotation angles for non-shape Kanizsas
 
+An experiment file is included `PSICAT.exp` - this is only for illustrative purposes, as experiments should anyway be defined by each user for their own experiment machine, ports, response device, etc etc.
+
+A setdef file `kanizsa_setdef.sdf` is included, but has not been tested.
+
+## Stimulus files
+
+PSICAT presents entirely computer-generated test stimuli. Thus the only stimulus files included are for instructions. There are several .png image files:
+* an example picture for the response device, this could be updated by the user to their own device
+* example pictures of Kanizsa shapes and non-shapes: in our experiments these were removed from the automated instructions in favour of showing on a sheet of paper by the research assistant. Users should decide their own approach.
+
+There are also instruction audio files in Finnish, recorded by and copyright of Kristiina Juurmaa. The content of the recordings matches the text instructions to be found in PSICAT.sce. To localise, users should record their own audio and edit `Localise.pcl` to enable switching of the file pointers.
 
 ## Localisation
 The protocol is localised, meaning that any language can be used for instructions if the text strings and audio wavefiles are provided. Text objects and audio instruction files are defined in `PSICAT.sce` to be in Finnish. The subroutine `localise()` will reset the text captions and audio wavefile filenames, given an argument string of the preferred language name. Currently only English is supported, and not for audio; audio instruction files are provided only in Finnish. However the function shows the complete example code which needs only to be uncommented once audio files are available.
