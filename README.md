@@ -6,11 +6,15 @@ This repository contains the code for PSICAT, a sustained attention test. PSICAT
 
 The code is freely available to use or modify under the MIT licence.
 
-The protocol is to be reported in a publication:
+## Reporting and testing
 
-_Cowley, B. (2017) The PSICAT protocol - Primed Subjective Illusory Contour Attention Task for studying integrated functional cognitive basis of sustained attention. Behavioural Research Methods, X, Y_
+The protocol and its validation testing has been reported in a preprint, and is pending peer-reviewed publication:
 
-If the protocol or any part of the code is used in published research, authors should cite the publication above in full, and link to this repository for the benefit of their readers to validate their work.
+_Cowley, B. U. (2017). The PSICAT protocol - Primed Subjective-Illusory-Contour Attention Task for studying integrated functional cognitive basis of sustained attention. Open Science Framework, preprint(gd5p4). Retrieved from ![osf.io/gd5p4](https://osf.io/gd5p4/)_
+
+If the protocol or any part of the code is used in published research, authors should cite the latest publication given above, and link to this repository for the benefit of their readers to validate their work.
+
+The data used to test the protocol is ![available from Figshare](https://figshare.com/account/projects/28047/articles/5759487)
 
 ## Code Files
 Two scenario files are included:
