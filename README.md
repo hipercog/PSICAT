@@ -10,6 +10,8 @@ The code is freely available to use or modify under the MIT licence.
 
 The protocol and its validation testing has been reported in a preprint, and is pending peer-reviewed publication:
 
+_Cowley, B. U. (2018). Studying the integrated functional cognitive basis of sustained attention with a Primed Subjective-Illusory-Contour Attention Task. Nature Scientific Reports, 8(1), 13514. ![10.1038/s41598-018-31876-7](https://doi.org/10.1038/s41598-018-31876-7/) _
+
 _Cowley, B. U. (2017). The PSICAT protocol - Primed Subjective-Illusory-Contour Attention Task for studying integrated functional cognitive basis of sustained attention. Open Science Framework, preprint(gd5p4). Retrieved from ![osf.io/gd5p4](https://osf.io/gd5p4/)_
 
 If the protocol or any part of the code is used in published research, authors should cite the latest publication given above, and link to this repository for the benefit of their readers to validate their work.
